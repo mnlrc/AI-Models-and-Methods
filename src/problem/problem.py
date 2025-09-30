@@ -28,7 +28,23 @@ class SearchProblem(ABC, Generic[S]):
 
         Note that if an agent dies, the game is over and there is no successor to that state.
         """
-        raise NotImplementedError()
+        successors = []
+
+        # if there isn't any agent alive, there aren't any successors
+        if not any(state.agents_alive):
+            return successors
+        
+        # checking all possible actions following the current state
+        for action in Action:
+            pass
+        agents = self.world.agents
+        for agent in agents:
+            # agent.
+            pass
+        self.world.step
+        
+        
+        
 
     def heuristic(self, problem_state: S) -> float:
         raise NotImplementedError()
