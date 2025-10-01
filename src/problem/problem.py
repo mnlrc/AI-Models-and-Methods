@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
-from lle import World, Action, WorldState
+from lle import World, Action, WorldState, EventType
 
 
 S = TypeVar("S", bound=WorldState)
@@ -34,21 +34,17 @@ class SearchProblem(ABC, Generic[S]):
         if not any(state.agents_alive):
             return successors
         
-        current_state = state # keeping a copy of the current state
+        available_actions = self.world.available_actions
 
-        agents = self.world.agents
+        for action in available_actions:
+            event = self.world.step(action)
+            if event == EventType.AGENT_DIED: # if an agent dies, the game is over
+                pass
+            new_state = self.world.get_state()
+            successors.append((new_state, action))
 
-        for agent in agents:
+            self.world.set_state(state) # reseting to the current state
 
-
-        # checking all possible actions following the current state
-        for action in Action:
-            pass
-        for agent in agents:
-            # agent.
-            pass
-        self.world.step
-        
 
     def heuristic(self, problem_state: S) -> float:
         raise NotImplementedError()
