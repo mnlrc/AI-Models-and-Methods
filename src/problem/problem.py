@@ -47,4 +47,6 @@ class SearchProblem(ABC, Generic[S]):
 
 
     def heuristic(self, problem_state: S) -> float:
-        raise NotImplementedError()
+        agent_positions = self.world.agents_positions
+        gem_positions = self.world.gems # supposing this is a list of positions (tuples)
+        
