@@ -16,6 +16,4 @@ class ExitProblem(SearchProblem[WorldState]):
                     state.agents_positions.remove(agent_position)
 
 
-        if len(exits) == 0 and len(state.agents_positions) == 0:
-            return True
-        return False
+        return len(exits) == 0 and len(state.agents_positions) == 0
