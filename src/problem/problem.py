@@ -47,6 +47,17 @@ class SearchProblem(ABC, Generic[S]):
 
 
     def heuristic(self, problem_state: S) -> float:
-        agent_positions = self.world.agents_positions
-        gem_positions = self.world.gems # supposing this is a list of positions (tuples)
-        
+        heuristic = 0
+        if not problem_state.agents_positions == self.world.exit_pos: # checking if all agent arrived to their destination
+                try:
+                    for i in range(len(problem_state.agents_positions)):
+                        x_agent, y_agent = problem_state.agents_positions[i]
+                        x_exit, y_exit = self.world.exit_pos[i]
+
+                        h = abs(x_agent - x_exit) + abs(y_agent - y_exit)
+                        heuristic += h
+                    return heuristic
+                except:
+                    raise Exception("The number of agents doesn't coincide with the number of exits")
+                
+        return heuristic

@@ -8,16 +8,18 @@ def show(world: World):
     cv2.waitKey(1)
 
 
-world = World.level(1)
+# world = World.level(1)
+world = World("S0 . X X")
 world.reset()
 show(world)
+# input("tamer")
 path = [Action.SOUTH] * 5
 path += [Action.EAST] * 3
 path += [Action.SOUTH] * 5
 path += [Action.WEST] * 3
 for action in path:
-    events = world.step(action)
-    print(events)
+    # events = world.step(action)
+    # print(events)
     show(world)
     input("Appuyez sur 'enter' pour passer à l'action suivante...")
 
