@@ -34,16 +34,21 @@ class SearchProblem(ABC, Generic[S]):
         if not any(state.agents_alive):
             return successors
         
-        available_actions = self.world.available_actions
+        available_actions = self.world.available_actions()
+        self.world.set_state(state)
+        previous_state = self.world.get_state()
 
-        for action in available_actions:
-            event = self.world.step(action)
-            if event == EventType.AGENT_DIED: # if an agent dies, the game is over
-                pass
-            new_state = self.world.get_state()
-            successors.append((new_state, action))
+        for agent_actions in available_actions:
+            for action in agent_actions:
+                events = self.world.step(action)
+                if EventType.AGENT_DIED in events: # if an agent dies, the game is over
+                    continue
+                new_state = self.world.get_state()
+                successors.append((new_state, action))
 
-            self.world.set_state(state) # reseting to the current state
+                self.world.set_state(previous_state) # reseting to the previous state
+
+        return successors
 
 
     def heuristic(self, problem_state: S) -> float:
