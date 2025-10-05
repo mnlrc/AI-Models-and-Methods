@@ -89,5 +89,25 @@ def bfs(problem: SearchProblem) -> Optional[Solution]:
                 queue.push(new_node, 0)
                 visited.add(successor_state)  
 
+
 def astar(problem: SearchProblem) -> Optional[Solution]:
-    raise NotImplementedError()
+    queue = PriorityQueue()
+    visited = set()
+
+    first_node = SearchNode(problem.world.get_state(), None, None, 0)
+    queue.push(first_node, first_node.cost) # cost of the first Node is always 0
+    visited.add(first_node.state)
+
+    while not queue.is_empty():
+        current_node = queue.pop()
+
+        if problem.is_goal_state(current_node.state):
+            return Solution.from_node(current_node)
+        
+        current_successors = problem.get_successors(current_node.state)
+        for successor_state, action in reversed(current_successors):
+            if successor_state not in visited:
+                new_cost = current_node.cost + problem.heuristic(successor_state)
+                new_node = SearchNode(successor_state, current_node, action, new_cost)
+                queue.push(new_node, new_cost)
+                visited.add(successor_state)
