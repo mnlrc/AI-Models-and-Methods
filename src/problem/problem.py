@@ -71,9 +71,9 @@ class SearchProblem(ABC, Generic[S]):
             raise ValueError("There aren't enough exits for all the agents")
         
         if not problem_state.agents_positions == self.world.exit_pos: # checking if all agent arrived to their destination
-            for exit in self.world.exit_pos:
+            for agent_pos in problem_state.agents_positions:
                 best = float("+inf")
-                for agent_pos in problem_state.agents_positions:
+                for exit in self.world.exit_pos:
                     temp = self.__manhattan_distance(agent_pos, exit)
 
                     if temp < best:
