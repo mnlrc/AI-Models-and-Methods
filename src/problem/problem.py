@@ -57,16 +57,20 @@ class SearchProblem(ABC, Generic[S]):
 
     def heuristic(self, problem_state: S) -> float:
         heuristic = 0
+        if len(problem_state.agents_positions) > len(self.world.exit_pos):
+            raise ValueError("There aren't enough exits for all the agents")
+        
         if not problem_state.agents_positions == self.world.exit_pos: # checking if all agent arrived to their destination
-                try:
-                    for i in range(len(problem_state.agents_positions)):
-                        x_agent, y_agent = problem_state.agents_positions[i]
-                        x_exit, y_exit = self.world.exit_pos[i]
+            for exit in self.world.exit_pos:
+                best = float("+inf")
+                for agent_pos in problem_state.agents_positions:
+                    agent_x, agent_y = agent_pos
+                    exit_x, exit_y = exit
+                    temp = abs(agent_x - exit_x) + abs(agent_y - exit_y)
 
-                        h = abs(x_agent - x_exit) + abs(y_agent - y_exit)
-                        heuristic += h
-                    return heuristic
-                except:
-                    raise Exception("The number of agents doesn't coincide with the number of exits")
-                
+                    if temp < best:
+                        best = temp
+
+                heuristic += best
+        
         return heuristic
