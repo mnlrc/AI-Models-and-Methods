@@ -47,8 +47,27 @@ class SearchNode:
 
 
 def dfs(problem: SearchProblem) -> Optional[Solution]:
-    raise NotImplementedError()
+    stack = []
+    visited = set()
+    
+    first = SearchNode(problem.world.get_state(), None, None)
+    stack.append(first)
+    visited.add(first.state)
+    
+    while stack:
+        current_node = stack.pop()
 
+        if problem.is_goal_state(current_node.state):
+            return Solution.from_node(current_node)
+        
+        current_successors = problem.get_successors(current_node.state)
+        for successor_state, action in reversed(current_successors):
+            if successor_state not in visited:
+                new_node = SearchNode(successor_state, current_node, action)
+                stack.append(new_node)
+                visited.add(successor_state)
+
+    return None
 
 def bfs(problem: SearchProblem) -> Optional[Solution]:
     raise NotImplementedError()

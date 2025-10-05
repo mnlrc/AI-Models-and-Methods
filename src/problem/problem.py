@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
-from lle import World, Action, WorldState, EventType
+from lle import World, Action, WorldState, EventType, exceptions
 
 
 S = TypeVar("S", bound=WorldState)
@@ -40,13 +40,17 @@ class SearchProblem(ABC, Generic[S]):
 
         for agent_actions in available_actions:
             for action in agent_actions:
-                events = self.world.step(action)
-                if EventType.AGENT_DIED in events: # if an agent dies, the game is over
-                    continue
-                new_state = self.world.get_state()
-                successors.append((new_state, action))
+                try:
+                    events = self.world.step(action)
+                    # if an agent dies, the game is over thus not considering this state as a successor
+                    if EventType.AGENT_DIED in events:
+                        continue
+                    new_state = self.world.get_state()
+                    successors.append((new_state, action))
 
-                self.world.set_state(previous_state) # reseting to the previous state
+                    self.world.set_state(previous_state) # reseting to the previous state
+                except exceptions.InvalidActionError:
+                    continue
 
         return successors
 
