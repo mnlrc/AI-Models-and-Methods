@@ -67,7 +67,6 @@ def dfs(problem: SearchProblem) -> Optional[Solution]:
                 stack.append(new_node)
                 visited.add(successor_state)
 
-    return None
 
 def bfs(problem: SearchProblem) -> Optional[Solution]:
     queue = PriorityQueue()
