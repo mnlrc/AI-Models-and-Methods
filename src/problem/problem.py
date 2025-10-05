@@ -54,8 +54,18 @@ class SearchProblem(ABC, Generic[S]):
 
         return successors
 
+    def __manhattan_distance(self, agent: tuple[int, int], exit: tuple[int, int]) -> float:
+        """
+        Simple private method to calculate manhattan distance based on two points.
+        """
+        agent_x, agent_y = agent
+        exit_x, exit_y = exit
+        return abs(agent_x - exit_x) + abs(agent_y - exit_y)
 
     def heuristic(self, problem_state: S) -> float:
+        """
+        Calculates the heuristic for the A* search algorithm.
+        """
         heuristic = 0
         if len(problem_state.agents_positions) > len(self.world.exit_pos):
             raise ValueError("There aren't enough exits for all the agents")
@@ -64,9 +74,7 @@ class SearchProblem(ABC, Generic[S]):
             for exit in self.world.exit_pos:
                 best = float("+inf")
                 for agent_pos in problem_state.agents_positions:
-                    agent_x, agent_y = agent_pos
-                    exit_x, exit_y = exit
-                    temp = abs(agent_x - exit_x) + abs(agent_y - exit_y)
+                    temp = self.__manhattan_distance(agent_pos, exit)
 
                     if temp < best:
                         best = temp
