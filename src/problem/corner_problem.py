@@ -9,7 +9,7 @@ class CornerState(WorldState):
         gems_collected: list[bool],
         agents_alive: list[bool],
         corner_positions: set[tuple[int, int]],
-        visited_corners: set[tuple[int, int]] = set(),
+        visited_corners: set[tuple[int, int]],
     ):
         super().__init__(agents_positions, gems_collected, agents_alive)
         self.corner_positions = corner_positions
@@ -28,7 +28,7 @@ class CornerState(WorldState):
         return instance
 
     def __hash__(self) -> int:
-            return hash(super().__hash__() and tuple(self.visited_corners))
+            return hash((super().__hash__(), tuple(self.visited_corners)))
     
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CornerState):
@@ -45,6 +45,7 @@ class CornerProblem(SearchProblem[CornerState]):
             initial_world_state.gems_collected,
             initial_world_state.agents_alive,
             self.corners,
+            set()
         )
 
     def is_goal_state(self, state: CornerState) -> bool:
@@ -79,21 +80,15 @@ class CornerProblem(SearchProblem[CornerState]):
         successors = []
 
         if not isinstance(state, CornerState):
-            state = CornerState(
-                state.agents_positions,
-                state.gems_collected,
-                state.agents_alive,
-                self.corners,
-                set()
-            )
+            raise TypeError("This method only accepts CornerState type")
 
         for world_state, actions in super().get_successors(state):
             next_state = CornerState(
                 world_state.agents_positions,
                 world_state.gems_collected,
                 world_state.agents_alive,
-                state.corner_positions,
-                state.visited_corners
+                self.corners,
+                state.visited_corners.copy()
             )
             successors.append((next_state, actions))
         return successors

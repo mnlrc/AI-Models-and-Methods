@@ -50,7 +50,7 @@ def dfs(problem: SearchProblem) -> Optional[Solution]:
     stack = []
     visited = set()
     
-    first_node = SearchNode(problem.world.get_state(), None, None)
+    first_node = SearchNode(problem.initial_state, None, None)
     stack.append(first_node)
     visited.add(first_node.state)
     
@@ -72,7 +72,7 @@ def bfs(problem: SearchProblem) -> Optional[Solution]:
     queue = PriorityQueue()
     visited = set()
 
-    first_node = SearchNode(problem.world.get_state(), None, None)
+    first_node = SearchNode(problem.initial_state, None, None)
     queue.push(first_node, 0)
     visited.add(first_node.state)
 
@@ -94,7 +94,7 @@ def astar(problem: SearchProblem) -> Optional[Solution]:
     queue = PriorityQueue()
     visited = set()
 
-    first_node = SearchNode(problem.world.get_state(), None, None, 0)
+    first_node = SearchNode(problem.initial_state, None, None, 0)
     queue.push(first_node, first_node.cost) # cost of the first Node is always 0
     visited.add(first_node.state)
 
