@@ -34,6 +34,7 @@ class SearchProblem(ABC, Generic[S]):
         if not any(state.agents_alive):
             return successors
         
+        new_state = self.world.set_state(state)
         available_actions = self.world.available_actions()
         self.world.set_state(state)
         previous_state = self.world.get_state()
