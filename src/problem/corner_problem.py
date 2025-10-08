@@ -28,12 +28,18 @@ class CornerState(WorldState):
         return instance
 
     def __hash__(self) -> int:
-            return hash((super().__hash__(), tuple(self.visited_corners)))
+        return hash((super().__hash__() and tuple(self.visited_corners),))
     
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CornerState):
             return TypeError("Wrong type given to compare")
-        return self.corner_positions == other.corner_positions and self.visited_corners == other.visited_corners
+        return super().__eq__(other) and self.corner_positions == other.corner_positions and self.visited_corners == other.visited_corners
+    
+    def check_agents_on_corners(self):
+        for agent_pos in self.agents_positions:
+            for corner_pos in self.corner_positions:
+                if agent_pos == corner_pos:
+                    self.visited_corners.add(corner_pos)
 
 class CornerProblem(SearchProblem[CornerState]):
     def __init__(self, world: World):
@@ -55,18 +61,13 @@ class CornerProblem(SearchProblem[CornerState]):
 
         # 1st step
         # if all the exits haven't been visited, there is no use in checking the exits
-
-        if not isinstance(state, CornerState):
-            return False 
-
-        if not state.corner_positions == state.visited_corners:
+        if not len(state.corner_positions) == len(state.visited_corners):
             return False
         
         # 2nd step
         if not any(state.agents_alive):
             return False
         tem_agents_pos = state.agents_positions.copy()
-        
         # checking if agents are on the exits
         for exit in self.world.exit_pos:
             for agent_position in state.agents_positions:
@@ -90,5 +91,6 @@ class CornerProblem(SearchProblem[CornerState]):
                 self.corners,
                 state.visited_corners.copy()
             )
+            next_state.check_agents_on_corners()
             successors.append((next_state, actions))
         return successors

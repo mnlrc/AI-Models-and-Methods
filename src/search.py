@@ -27,6 +27,9 @@ class Solution(Generic[S]):
             states.append(node.state)
             node = node.parent
         actions.reverse()
+        # for state in states:
+            # print(state)
+            # print()
         return Solution(actions, states)
 
 
@@ -83,11 +86,11 @@ def bfs(problem: SearchProblem) -> Optional[Solution]:
             return Solution.from_node(current_node)
 
         current_successors = problem.get_successors(current_node.state)
-        for successor_state, action in reversed(current_successors):
+        for successor_state, action in current_successors:
             if successor_state not in visited:
                 new_node = SearchNode(successor_state, current_node, action)
                 queue.push(new_node, 0)
-                visited.add(successor_state)  
+                visited.add(successor_state)
 
 
 def astar(problem: SearchProblem) -> Optional[Solution]:
@@ -105,9 +108,9 @@ def astar(problem: SearchProblem) -> Optional[Solution]:
             return Solution.from_node(current_node)
         
         current_successors = problem.get_successors(current_node.state)
-        for successor_state, action in reversed(current_successors):
+        for successor_state, action in current_successors:
             if successor_state not in visited:
+                new_node = SearchNode(successor_state, current_node, action, current_node.cost + 1)
                 new_cost = current_node.cost + problem.heuristic(successor_state)
-                new_node = SearchNode(successor_state, current_node, action, new_cost)
                 queue.push(new_node, new_cost)
                 visited.add(successor_state)
