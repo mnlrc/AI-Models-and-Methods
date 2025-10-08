@@ -44,6 +44,7 @@ def check_exit_problem(problem: ExitProblem, solution: Solution):
 
 def check_corner_problem(problem: CornerProblem, solution: Solution):
     world = problem.world
+    world.reset()
     corners = set([(0, 0), (0, world.width - 1), (world.height - 1, 0), (world.height - 1, world.width - 1)])
     for action in solution.actions:
         world.step(action)
