@@ -28,12 +28,12 @@ S0 . . . . @ . . . .
 
 # not to complicate map but many gems on the map
 MANY_GEMS_MAP = """
-S0 . S1 . G . . . . G
-.  G . . . . . . . .
+S0 . . . G . . . . G
+.  G . . . . @ . . .
 .  . . . . G . . . G
 .  G . . . . . G . .
 .  . . . . G . . . .
-X  . . G . . . G X X
+X  . . G . . L0N G X X
 """
 
 # a complex map with some gems and some walls and the exit on the other side of the map
