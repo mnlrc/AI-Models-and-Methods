@@ -33,7 +33,7 @@ S0 . S1 . G . . . . G
 .  . . . . G . . . G
 .  G . . . . . G . .
 .  . . . . G . . . .
-.  . . G . . . G X X
+X  . . G . . . G X X
 """
 
 # a complex map with some gems and some walls and the exit on the other side of the map
