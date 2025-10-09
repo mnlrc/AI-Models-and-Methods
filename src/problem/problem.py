@@ -35,19 +35,18 @@ class SearchProblem(ABC, Generic[S]):
             return successors
         
         new_state = self.world.set_state(state)
-        available_actions = self.world.available_actions()
+        available_actions = self.world.available_joint_actions()
         self.world.set_state(state)
         previous_state = self.world.get_state()
 
         for agent_actions in available_actions:
-            for action in agent_actions:
                 try:
-                    events = self.world.step(action)
+                    events = self.world.step(agent_actions)
                     # if an agent dies, the game is over thus not considering this state as a successor
                     if EventType.AGENT_DIED in events:
                         continue
                     new_state = self.world.get_state()
-                    successors.append((new_state, action))
+                    successors.append((new_state, agent_actions[0]))
 
                     self.world.set_state(previous_state) # reseting to the previous state
                 except exceptions.InvalidActionError:

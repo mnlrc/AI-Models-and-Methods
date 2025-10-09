@@ -27,9 +27,6 @@ class Solution(Generic[S]):
             states.append(node.state)
             node = node.parent
         actions.reverse()
-        # for state in states:
-            # print(state)
-            # print()
         return Solution(actions, states)
 
 
