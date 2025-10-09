@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{eso-pic,graphicx}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage[pages=some]{background}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+
+
+% -----------------------------------------------------
+
+\begin{document}
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=\paperheight]{images/background.png}}
+\clearpage
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{flushleft} \large
+    \includegraphics[height=2.0cm]{images/logo_ulb.jpg}
+    \vspace{5cm}
+   \end{flushleft}
+  \begin{center}
+
+    %Title
+        \textsc{\huge INFO-F311 - Projet d'IA 1}\\[1cm]
+
+    \HRule \\[0.7cm]
+
+        \textsc {\Huge Recherche}\\[0.4cm]
+
+    \HRule \\[1.2cm]
+
+% Author and supervisor
+\begin{minipage}{0.5\textwidth}
+\begin{flushleft} \large
+\emph{Auteur:}\\
+Manuel \textsc{Rocca} - 000596086\\
+
+
+\end{flushleft}
+\end{minipage}
+\vspace{1cm}
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Professeurs:} \\
+Tom  \textsc{Lenaerts}\\
+\emph{Assistants:} \\
+Axel \textsc{Abels} \\
+Martin \textsc{Colot} \\
+Yannick \textsc{Molinghen} \\
+Pascal \textsc{Tribel}
+\end{flushright}
+\end{minipage}
+
+
+    \vfill
+
+    %Bottom of the page
+    {\large Année académique 2025-2026}
+  \end{center}
+
+  \end{sffamily}
+\end{titlepage}
+
+
+\clearpage
+
+
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------
+
+\section{Introduction}
+\section{Comparaison des algorithmes sur le GemProblem}
+\subsection{Longueur du chemin}
+\subsection{Durée moyenne d’exécution}
+\subsection{Nombre de nœuds visités}
+\section{Utilisation de L'IA}
+\section{Conclusion}
+
+\end{document}

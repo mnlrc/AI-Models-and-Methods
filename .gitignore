@@ -2,3 +2,7 @@ projet1-recherche.zip
 **/__pycache__/
 .pytest_cache/
 .vscode/
+doc/rapport.aux
+doc/rapport.log
+doc/rapport.out
+doc/rapport.toc
