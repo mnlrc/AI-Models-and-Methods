@@ -5,6 +5,7 @@ import time
 import cv2
 import sys
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # an easy map with just one gem not to far from the exit
@@ -74,41 +75,41 @@ def show_solution(solution, world):
         print("NO SOLUTION FOUND !")
         # time.sleep(5)
 
-def test_world(world: World, data: dict):
+def test_world(world: World, path_data: dict, time_data: dict, nodes_data: dict, map_key: str):
     """
     Take a world and test the 3 algo DFS, BFS and A*
     """
     problem = gem_problem.GemProblem(world)
 
     debut = time.time()
-    dfs_problem = dfs(problem, data)
+    dfs_problem = dfs(problem, nodes_data, map_key)
     end = time.time()
     delta = end - debut
-    data["dfs"]["times"].append(delta)
+    time_data[map_key]["dfs"].append(delta)
     print(f"Time to execute DFS: {delta} sec")
     if dfs_problem is not None:
         print(f"Path length of DFS: {dfs_problem.n_steps}")
-        data["dfs"]["steps"].append(dfs_problem.n_steps)
+        path_data[map_key]["dfs"].append(dfs_problem.n_steps)
 
     debut = time.time()
-    bfs_problem = bfs(problem, data)
+    bfs_problem = bfs(problem, nodes_data, map_key)
     end = time.time()
     delta = end - debut
-    data["bfs"]["times"].append(delta)
+    time_data[map_key]["bfs"].append(delta)
     print(f"Time to execute BFS: {delta} sec")
     if bfs_problem is not None:
         print(f"Path length of BFS: {bfs_problem.n_steps}")
-        data["bfs"]["steps"].append(bfs_problem.n_steps)
+        path_data[map_key]["bfs"].append(bfs_problem.n_steps)
 
     debut = time.time()
-    astar_problem = astar(problem, data)
+    astar_problem = astar(problem, nodes_data, map_key)
     end = time.time()
     delta = end - debut
-    data["astar"]["times"].append(delta)
+    time_data[map_key]["astar"].append(delta)
     print(f"Time to execute A*: {delta} sec")
     if astar_problem is not None:
         print(f"Path length of A*: {astar_problem.n_steps}")
-        data["astar"]["steps"].append(astar_problem.n_steps)
+        path_data[map_key]["astar"].append(astar_problem.n_steps)
 
     if not "-nogui" in sys.argv:
         show_solution(dfs_problem, world)
@@ -116,6 +117,37 @@ def test_world(world: World, data: dict):
         show_solution(astar_problem, world)
 
     print()
+
+def extract_average(data: dict):
+    ret = [["Easy map"],
+           ["One path map"],
+           ["Many gems map"],
+           ["Complex map"],
+           ["Impossible map"]]
+    
+    for map_key in range(len(data.keys())):
+        algorithms_dict = data[f"map{map_key}"]
+        for algorithm in algorithms_dict.values():
+            sum = 0
+            for value in algorithm:
+                sum += value
+            try:
+                average = sum / len(algorithm)
+
+            except ZeroDivisionError:
+                average = 0
+            ret[map_key].append(average)
+    
+    return ret
+
+def plot_graph(temp_data, title: str):
+    data = extract_average(temp_data)
+    df = pd.DataFrame(data, columns=["Maps", "DFS", "BFS", "A*"])
+
+    graph = df.plot(x="Maps", y=["DFS", "BFS", "A*"], kind="bar", figsize=(10, 10))
+    graph.set_title(title)
+
+    plt.show()
 
 def main():
     if len(sys.argv) > 3:
@@ -160,92 +192,91 @@ def main():
         test_world(impossible_world)
 
     elif len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1].lower() == "-nogui"):
-        map0_data = {
-            "dfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+        path_length = {
+            "map0": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "bfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map1": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "astar": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map2": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map3": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map4": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             }
         }
-        map1_data = {
-            "dfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+
+        execution_time = {
+            "map0": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "bfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map1": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "astar": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map2": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map3": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map4": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             }
         }
-        map2_data = {
-            "dfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+        
+        nodes_expanded = {
+            "map0": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "bfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map1": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             },
-            "astar": {
-                "times": [],
-                "steps": [],
-                "nodes": []
+            "map2": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map3": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
+            },
+            "map4": {
+                "dfs": [],
+                "bfs": [],
+                "astar": []
             }
         }
-        map3_data = {
-            "dfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            },
-            "bfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            },
-            "astar": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            }
-        }
-        map4_data = {
-            "dfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            },
-            "bfs": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            },
-            "astar": {
-                "times": [],
-                "steps": [],
-                "nodes": []
-            }
-        }
-        for _ in range(50):
+        
+        for _ in range(3):
             easy_world = World(EASY_MAP)
             one_path_world = World(ONE_PATH_MAP)
             many_gems_world = World(MANY_GEMS_MAP)
@@ -253,31 +284,19 @@ def main():
             impossible_world = World(IMPOSSIBLE_MAP)
 
             print("Launching test for the EASY MAP :")
-            test_world(easy_world, map0_data)
+            test_world(easy_world, path_length, execution_time, nodes_expanded, "map0")
             print("Launching test for the ONE PATH MAP :")
-            test_world(one_path_world, map1_data)
+            test_world(one_path_world, path_length, execution_time, nodes_expanded, "map1")
             print("Launching test for the MANY GEMS MAP :")
-            test_world(many_gems_world, map2_data)
+            test_world(many_gems_world, path_length, execution_time, nodes_expanded, "map2")
             print("Launching test for the COMPLEX MAP :")
-            test_world(complex_world, map3_data)
+            test_world(complex_world, path_length, execution_time, nodes_expanded, "map3")
             print("Launching test for the IMPOSSIBLE MAP")
-            test_world(impossible_world, map4_data)
+            test_world(impossible_world, path_length, execution_time, nodes_expanded, "map4")
 
-        print("MAP0: ", map0_data)
-        print()
-        print()
-        print("MAP1: ", map1_data)
-        print()
-        print()
-        print("MAP2: ", map2_data)
-        print()
-        print()
-        print("MAP3: ", map3_data)
-        print()
-        print()
-        print("MAP4: ", map4_data)
-        print()
-        print()
+        plot_graph(path_length, "Average path length")
+        plot_graph(execution_time, "Average execution time")
+        plot_graph(nodes_expanded, "Average number of expanded nodes")
 
     else:
         print("Invalid argument !")
