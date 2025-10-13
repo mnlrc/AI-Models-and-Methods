@@ -46,7 +46,8 @@ class SearchNode:
         return self.state == other.state and self.cost == other.cost
 
 
-def dfs(problem: SearchProblem) -> Optional[Solution]:
+def dfs(problem: SearchProblem, data: dict) -> Optional[Solution]:
+    visited_nodes = 0
     stack = []
     visited = set()
     
@@ -56,8 +57,10 @@ def dfs(problem: SearchProblem) -> Optional[Solution]:
     
     while stack:
         current_node = stack.pop()
+        visited_nodes += 1
 
         if problem.is_goal_state(current_node.state):
+            data["dfs"]["nodes"].append(visited_nodes)
             return Solution.from_node(current_node)
         
         current_successors = problem.get_successors(current_node.state)
@@ -67,8 +70,11 @@ def dfs(problem: SearchProblem) -> Optional[Solution]:
                 stack.append(new_node)
                 visited.add(successor_state)
 
+    data["dfs"]["nodes"].append(visited_nodes)
 
-def bfs(problem: SearchProblem) -> Optional[Solution]:
+
+def bfs(problem: SearchProblem, data: dict) -> Optional[Solution]:
+    visited_nodes = 0
     queue = PriorityQueue()
     visited = set()
 
@@ -78,19 +84,23 @@ def bfs(problem: SearchProblem) -> Optional[Solution]:
 
     while not queue.is_empty():
         current_node = queue.pop()
+        visited_nodes += 1
 
         if problem.is_goal_state(current_node.state):
+            data["bfs"]["nodes"].append(visited_nodes)
             return Solution.from_node(current_node)
 
         current_successors = problem.get_successors(current_node.state)
-        for successor_state, action in current_successors:
+        for successor_state, action in reversed(current_successors):
             if successor_state not in visited:
                 new_node = SearchNode(successor_state, current_node, action)
                 queue.push(new_node, 0)
                 visited.add(successor_state)
 
+    data["bfs"]["nodes"].append(visited_nodes)
 
-def astar(problem: SearchProblem) -> Optional[Solution]:
+def astar(problem: SearchProblem, data: dict) -> Optional[Solution]:
+    visited_nodes = 0
     queue = PriorityQueue()
     visited = set()
 
@@ -100,8 +110,10 @@ def astar(problem: SearchProblem) -> Optional[Solution]:
 
     while not queue.is_empty():
         current_node = queue.pop()
+        visited_nodes += 1
 
         if problem.is_goal_state(current_node.state):
+            data["astar"]["nodes"].append(visited_nodes)
             return Solution.from_node(current_node)
         
         current_successors = problem.get_successors(current_node.state)
@@ -111,3 +123,5 @@ def astar(problem: SearchProblem) -> Optional[Solution]:
                 new_cost = current_node.cost + problem.heuristic(successor_state)
                 queue.push(new_node, new_cost)
                 visited.add(successor_state)
+
+    data["astar"]["nodes"].append(visited_nodes)
