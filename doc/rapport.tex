@@ -88,6 +88,25 @@ entière).
 
 \section{Mode opératoire}
 % création des cartes + image et heuristique pour GemProblem et CornerProblem
+\subsection{Création des cartes}
+Lors de la création de nos cartes personnalisées, notre but principal était de créer des environnements permettant des scénario d'exécution des algorithmes
+uniques et distincts les un des autres. Ceci nous permet de bien nous rendre compte du comportement de chaque algorihme de recherche de chemin dans chaque cas
+de manière claire.
+
+\begin{itemize}
+  \item \emph{EASY MAP}: Une carte totalement vide avec une gemme pour se rendre compte du cas le plus direct.
+  \item \emph{ONE PATH MAP}: Cette carte ne possède qu'un seul chemin valide, permettant de se rendre compte de
+  la robustesse des algorithmes, de leur temps d'exécution.
+  \item \emph{MANY GEMS MAP}: Ici nous testons tous les paramètres sur une carte ouverte.
+  \item \emph{COMPLEX MAP}: Pareil que pour la carte précédente mais avec plus d'obstacles pour mieux se rendre
+  compte de certains aller-retours inutiles (en particulier dans le cas du DFS).
+  \item \emph{IMPOSSIBLE MAP}: Cette dernière carte permet de vérifier la justesse des algorithmes de recherche
+  dans le cas où il n'existe pas de chemin valide (voir s'il n'existe pas d'abberation).
+\end{itemize}
+
+\subsection{Heuristiques}
+
+
 \section{Comparaison des algorithmes sur le GemProblem}
 \subsection{Longueur du chemin}
 \subsection{Durée moyenne d'exécution}

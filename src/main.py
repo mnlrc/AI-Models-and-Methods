@@ -7,7 +7,9 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
+"""
+Credits to Ethan Van Ruykenveelde for the creation of these maps for testing.
+"""
 # an easy map with just one gem not to far from the exit
 EASY_MAP = """
 S0 . . . . . . . . .

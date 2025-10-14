@@ -6,3 +6,6 @@ doc/rapport.aux
 doc/rapport.log
 doc/rapport.out
 doc/rapport.toc
+doc/rapport.fdb_latexmk
+doc/rapport.fls
+doc/rapport.synctex.gz
