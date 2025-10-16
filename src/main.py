@@ -7,6 +7,8 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 
+NUMBER_OF_EXECUTIONS = 50 # for testing
+
 """
 Credits to Ethan Van Ruykenveelde for the creation of these maps for testing.
 """
@@ -92,6 +94,7 @@ def test_world(world: World, path_data: dict, time_data: dict, nodes_data: dict,
     if dfs_problem is not None:
         print(f"Path length of DFS: {dfs_problem.n_steps}")
         path_data[map_key]["dfs"].append(dfs_problem.n_steps)
+    # print("Nodes expanded in DFS: ", nodes_data[map_key]["dfs"][0])
 
     debut = time.time()
     bfs_problem = bfs(problem, nodes_data, map_key)
@@ -102,6 +105,7 @@ def test_world(world: World, path_data: dict, time_data: dict, nodes_data: dict,
     if bfs_problem is not None:
         print(f"Path length of BFS: {bfs_problem.n_steps}")
         path_data[map_key]["bfs"].append(bfs_problem.n_steps)
+    # print("Nodes expanded in BFS: ", nodes_data[map_key]["bfs"][0])
 
     debut = time.time()
     astar_problem = astar(problem, nodes_data, map_key)
@@ -112,6 +116,7 @@ def test_world(world: World, path_data: dict, time_data: dict, nodes_data: dict,
     if astar_problem is not None:
         print(f"Path length of A*: {astar_problem.n_steps}")
         path_data[map_key]["astar"].append(astar_problem.n_steps)
+    # print("Nodes expanded in A*: ", nodes_data[map_key]["astar"][0])
 
     if not "-nogui" in sys.argv:
         show_solution(dfs_problem, world)
@@ -278,7 +283,7 @@ def main():
             }
         }
         
-        for _ in range(3):
+        for _ in range(NUMBER_OF_EXECUTIONS):
             easy_world = World(EASY_MAP)
             one_path_world = World(ONE_PATH_MAP)
             many_gems_world = World(MANY_GEMS_MAP)

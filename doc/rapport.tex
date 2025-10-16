@@ -4,6 +4,7 @@
 \usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 \usepackage{titlesec}
 \usepackage{hyperref}
+\usepackage{float}
 \usepackage[pages=some]{background}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
@@ -86,6 +87,7 @@ d'éléments divers comme des agents, qui font le déplacement et des objectifs,
 objectifs se manifestent sous forme de gemmes à collecter, de coins à visiter et de sorties à trouver (chaque objectif consiste en un problème à part
 entière).
 
+
 \section{Mode opératoire}
 % création des cartes + image et heuristique pour GemProblem et CornerProblem
 \subsection{Création des cartes}
@@ -104,14 +106,121 @@ de manière claire.
   dans le cas où il n'existe pas de chemin valide (voir s'il n'existe pas d'abberation).
 \end{itemize}
 
+
 \subsection{Heuristiques}
+
+Il nous était demandé d'implémenter une heuristique par problème mais nous ne l'avons pas fait. Afin d'expliquer
+cette décision, commençons par définir l'heuristique pour l'algorihme A*.
+\newtheorem{definition}{Définition}
+\begin{definition}[Heuristique A*]
+  La fonction heuristique $h(n)$ fournit une estimation du coût entre le nœud actuel et le nœud cible, agissant comme une "supposition éclairée" de 
+  l'algorithme sur le chemin restant à parcourir.\footnote{Source: https://www.datacamp.com/fr/tutorial/a-star-algorithm}
+\end{definition}
+En d'autres termes, l'algorithme A* est l'équivalent de l'algorihme de Dijkstra avec une heuristique qui "dirige" la trajectoire,
+elle oriente la recherche pour être plus efficace.
+
+Nous avons trois problèmes différents. L'\emph{Exit Problem}, le \emph{Gem Problem} et le \emph{Corner Problem}.
+L'heuristique que nous avons implémenté ne s'adresse initialement qu'au problème de sortie (la distance de Manhattan
+est calculée par rapport à la sortie/aux sorties). Nous voulions d'abord bêtement implémenter deux heuristiques supplémentaires
+pour chacun des problèmes mais, après réflexion, nous sommes arrivés à la conclusion suivante:
+Le \emph{Gem Problem} et le \emph{Corner Problem} ne font qu'ajouter des conditions à l'état de sortie valide.
+En d'autres termes, ils ajoutent des étapes avant d'atteindre la sortie. Or, le but d'A* est de minimiser le coût
+total pour arriver au but final. Donc, A* trouvera quand même le meilleur chemin en rammassant toutes les gemmes/en passant par
+tous les coins.
+
+Un défaut de notre implémentation que nous souhaitons tout de même relever est le fait que A* visitera plus de nœuds
+pour trouver ce chemin optimal. En effet, l'heuristique dirige toujours vers la sortie. Le scénario d'exécution
+logique de l'algorithme dans notre cas est le suivant: il va d'abord chercher la sortie, la trouver et se rendre compte
+que ce n'est pas un état final valide et donc continuer l'exploration. Notre défaut vient donc du fait que,
+si nous avions une heuristique adaptée aux gemmes/coins, A* se dirigerait d'abord vers les gemmes/coins à la place
+de sortie et visiterait moins de nœuds mais nous n'avons pas implémenté de telles heuristiques.
 
 
 \section{Comparaison des algorithmes sur le GemProblem}
-\subsection{Longueur du chemin}
-\subsection{Durée moyenne d'exécution}
-\subsection{Nombre de nœuds visités}
-\section{Utilisation de L'IA}
+
+Afin de tester l'implémentation de nos algorithmes, il nous était demandé d'implémenter quatres cartes personnalisées
+et pertinentes pour l'objet de nos tests. Nous avons pris la liberté de reprendre celles de notre collègue étudiant Ethan
+Van Ruykenveelde et d'en modifier certaines.
+Pour chaque expérience, nous avons effectué cinquante itérations pour, d'une part, vérifier l'absence d'aberrations et,
+d'autre part, avoir une moyenne pertinente (surtout dans le cas de la durée moyenne d'exécution car, normalement,
+pour un problème donné constant, les algorithmes de recherches trouvent toujours la même solution).
+
+\subsection{Graphes}
+\subsubsection{Longueur du chemin}
+
+\begin{figure}[H]
+  \includegraphics[height=17cm]{images/path-length-graph.png}
+\end{figure}
+
+\subsubsection{Durée moyenne d'exécution}
+
+\begin{figure}[H]
+  \includegraphics[height=17cm]{images/execution-time-graph.png}
+\end{figure}
+
+\subsubsection{Nombre de nœuds visités}
+
+\begin{figure}[H]
+  \includegraphics[height=17cm]{images/expanded-nodes-graph.png}\label{fig:nodes-graph}
+\end{figure}
+
+\subsection{Discussion des résultats}
+
+Sur base des résultats, il est clair qu'à part au niveau du temps d'exécution, l'algorithme \emph{Depth First Search} (DFS) est
+moins efficace. Comme son nom l'indique, cet algorithme explore d'abord en profondeur et renvoie la première
+solution de chemin valide, sans étendre beaucoup de nœuds (d'où le faible temps d'exécution).
+
+À l'inverse l'algorithme \emph{Breadth First Search}, qui cherche donc en largeur, pratique une recherche
+exhaustive et renvoie un chemin optimal. Similairement, A* fait usage d'une recherche dite "informée" au travers
+de la fonction heuristique et permet également de trouver un chemin optimal. Cette optimalité se fait au prix 
+d'une durée d'exécution supérieure et, surtout, un nombre de nœuds étendus nettement plus important 
+(particulièrement visible sur la \emph{MANY GEMS MAP} (\ref{fig:nodes-graph})).
+
+
+\section{Utilisation de l'IA}
+
+En cette fin d'année 2025, un étudiant qui dit qu'il n'a pas utilisé l'IA pour faire son projet est essentiellement
+l'équivalent d'un développeur qui prétend ne jamais avoir eu de segmentation fault en C. Autrement dit, des foutaises.
+
+En tant qu'étudiant, l'IA peut être un outil très puissant mais également très dangereux pour l'apprentissage. 
+Le but de l'université est d'apprendre. Si l'intelligence artificielle est mal utilisée, dans le sens où 
+l'étudiant lui demande les réponses, de tout faire sans comprendre, autant ne pas étudier à l'université.
+
+Notre point de vue est donc celui-ci. Il faut faire usage l'IA de manière pertinente, c'est-à-dire 
+pour comprendre ce que l'on fait (pas bêtement copier-coller du code\footnote{Copier-coller du code pouvait
+déjà être fait avant les LLMs à partir de forums, de sites internet ou n'importe quelles autres sources. Comprendre
+ce que l'on fait dans le cadre universitaire n'est donc en soit pas une nouvelle chose mais ne pert aucunement en
+importance avec l'avènement des LLMs.}), demander des explications (idéalement après avoir lu les supports de cours, 
+recherché en ligne, etc\dots).
+
+Dans le cadre de ce projet, nous avons donc utilisé l'IA pour les choses suivantes: comprendre des résultats
+d'exécution plus facilement lorsqu'un test ne passe pas après plusieurs tentatives, essayer de comprendre le code
+initialement donné (la compréhension des types était particulièrement éprouvante car la librairie utilisée ne précise
+pas toujours les types dans la documentation et, de manière générale, car python est un langage très peu typé, même
+si l'on peut les préciser dans certains cas). Nous l'avons également utilisé pour le rapport. Après avoir fait nos
+recherches et rédigé une explication (concernant l'heuristique et les résultats) nous avons demandé à l'IA d'analyser
+les conclusions pour lesquelles nous n'étions pas totalement certains (notamment pour la justification de l'exécution
+sans heuristique).
+
+Avec du recul, nous nous rendu compte que cela reste tout de même beaucoup. Cependant, comme expliqué au début de
+cette section, nous nous sommes tenus à faire un usage de l'IA dans un but explicatif et non un usage de type esclave.
+
+Pour conclure cette section, nous trouvons que permettre l'usage de l'IA aux étudiants et quelque chose de plutôt
+pertinent car ce n'est pas un outil qui semble être voué à disparaître. Au contraire, c'est une chose qui se
+développe sans cesse et apprendre à élever son usage au travers d'outils modernes est une super bonne chose. 
+De plus, les étudiants sont (dans la majorité des cas) des adultes responsables. Ce que nous voulons dire par là
+est que, si un étudiant fait usage de l'IA de manière irréfléchie et abusive, c'est, en un sens, son problème car
+il n'apprendra absolument rien.
+
+
 \section{Conclusion}
+
+Afin de conclure ce rapport ainsi que ce projet, revenons brièvement sur notre travail. Ce projet de recherche
+nous a permis de mettre la manière vue en pratique. Nous avons vu le concept d'environnement, d'agent, de recherche
+de solution optimale (ou non) à l'aide de divers outils (ici les algorihmes DFS, BFS, A*). Nous avons étudié et
+comparé les résultats afin d'arriver à des conclusions pertinentes.
+
+Ce projet compose donc une bonne introduction aux techniques d'intelligence d'artificielle basées sur la recherche
+dans les graphes.
 
 \end{document}
