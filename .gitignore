@@ -2,10 +2,10 @@ projet1-recherche.zip
 **/__pycache__/
 .pytest_cache/
 .vscode/
-doc/rapport.aux
-doc/rapport.log
-doc/rapport.out
-doc/rapport.toc
-doc/rapport.fdb_latexmk
-doc/rapport.fls
-doc/rapport.synctex.gz
+**/rapport.aux
+**/rapport.log
+**/rapport.out
+**/rapport.toc
+**/rapport.fdb_latexmk
+**/rapport.fls
+**/rapport.synctex.gz
