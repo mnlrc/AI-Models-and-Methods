@@ -8,7 +8,10 @@ class Grid:
         self.gems = gems
         self.network = BayesianNetwork(self.grid_size, len(self.gems))
         self.current_position = [0, 0]
-        self.network.infer(self.current_position, [distance(self.current_position, i) for i in self.gems])
+        # self.sigma = 0.25
+        true_distances = [distance(self.current_position, i) for i in self.gems]
+        # noisy_distances = [d + np.random.normal(0, self.sigma) for d in true_distances]
+        self.network.infer(self.current_position, true_distances)
 
     def move(self, direction):
         """Updates the agent position, and performs the inference in the Bayesian network"""
@@ -20,7 +23,9 @@ class Grid:
             self.current_position[0] -= 1
         elif direction == "D":
             self.current_position[0] += 1
-        self.network.infer(self.current_position, [distance(self.current_position, i) for i in self.gems])
+        true_distances = [distance(self.current_position, i) for i in self.gems]
+        # noisy_distances = [d + np.random.normal(0, self.sigma) for d in true_distances]
+        self.network.infer(self.current_position, true_distances)
     
     def plot(self):
         """Plots the current value of G"""
