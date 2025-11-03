@@ -22,7 +22,7 @@ class BayesianNetwork:
     
     def likelihood(self, current_cell: tuple[int, int], distances: list[int], gem_positions: list[tuple[int, int]]):
         """Compute likelihood of observing given distances, given gem positions."""
-        𝜆 = 1 # hyperparameter set arbitrarly (for now at least)
+        𝜆 = 1 # hyperparameter set arbitrarly
         observations = []
 
         for gem_pos in gem_positions:
