@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{eso-pic,graphicx}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage[pages=some]{background}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+
+
+% -----------------------------------------------------
+
+\begin{document}
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=\paperheight]{images/background.png}}
+\clearpage
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{flushleft} \large
+    \includegraphics[height=2.0cm]{images/logo_ulb.jpg}
+    \vspace{5cm}
+   \end{flushleft}
+  \begin{center}
+
+    %Title
+        \textsc{\huge INFO-F311 - Projet d'IA 2}\\[1cm]
+
+    \HRule \\[0.7cm]
+
+        \textsc {\Huge Réseaux Bayésiens}\\[0.4cm]
+
+    \HRule \\[1.2cm]
+
+% Author and supervisor
+\begin{minipage}{0.5\textwidth}
+\begin{flushleft} \large
+\emph{Auteur:}\\
+Manuel \textsc{Rocca} - 000596086\\
+
+
+\end{flushleft}
+\end{minipage}
+\vspace{1cm}
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Professeurs:} \\
+Tom  \textsc{Lenaerts}\\
+\emph{Assistants:} \\
+Axel \textsc{Abels} \\
+Martin \textsc{Colot} \\
+Yannick \textsc{Molinghen} \\
+Pascal \textsc{Tribel}
+\end{flushright}
+\end{minipage}
+
+
+    \vfill
+
+    %Bottom of the page
+    {\large Année académique 2025-2026}
+  \end{center}
+
+  \end{sffamily}
+\end{titlepage}
+
+
+\clearpage
+
+
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------
+
+\section{Introduction}
+
+Ce second projet d'Intelligence Artificielle a pour but d'appliquer la théorie concernant les réseaux Bayésiens. Cette structure 
+de données repose fortement sur les probabilités, en particulier les probabilités conjointes. Donc, en plus de "bêtement" implémenter
+une structure de données, ce projet nous a permis de relier différents concepts provenants de divers cours du bachelier de sciences-
+informatiques (en particulier Probabilités et Statistiques, cours de BA2).
+
+% ajouter définition + vulgarisation
+
+\section{Implémentation des expériences}
+
+\subsection{Fonction de vraisemblance}
+% donner la définition d'un hyperparamètre pour argumenter et être formel
+
+\subsection{Inférence par énumération}
+% expliquer comment elle a été implémentée; grâce à romain mais tout dans la subtilité
+
+\section{Analyses de l'impact de paramètres sur la détection de gemmes}
+
+\subsection{Impact du paramètre 𝜆}
+
+\subsection{Impact de l'intensité du bruit $𝜎$}
+
+
+\section{Usage des LLMs}
+
+\section{Conclusion}
+
+
+
+\end{document}
