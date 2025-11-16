@@ -90,7 +90,7 @@ if __name__ == "__main__":
     # np.random.seed(0) # Si vous utilisez numpy pour des tirages aléatoires
     env = rl.Labyrinth(p=0.1)
     env.reset()
-    random_moves(env, 10_000)
+    #random_moves(env, 10_000)
 
     # Uncomment for Value Iteration
     from rl import ValueIteration, QLearning
@@ -102,6 +102,6 @@ if __name__ == "__main__":
     # Uncomment for Q-learning
     policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
     algo = QLearning(env, 0.9, 0.1, policy)
-    algo.train(10_000)
+    #algo.train(10_000)
     action_to_symbol = ["↑", "↓", "→", "←", "·"]
     plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)

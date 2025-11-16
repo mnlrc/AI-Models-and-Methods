@@ -42,7 +42,7 @@ class Labyrinth:
         self._world.set_state(WorldState([state], []))
 
     @property
-    def valid_states(self):
+    def valid_states(self) -> list[tuple[int, int]]:
         """The list of valid positions for the agent."""
         return self._valid_positions
 
@@ -93,7 +93,7 @@ class Labyrinth:
         return reward
 
     @property
-    def agent_position(self):
+    def agent_position(self) -> tuple[int, int]:
         """
         Get the agent's current position in the labyrinth.
 
