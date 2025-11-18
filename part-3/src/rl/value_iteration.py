@@ -25,27 +25,27 @@ class ValueIteration:
 
         # difference of values of two succeeding states
         current_delta = 0
-        positions = [self.env.agent_position]
+        available_states = [self.env.agent_position]
+        probability = 1 - self.env._p
         while True:
-            for agent_pos in positions:
-                new_positions = []
-                v = self.V[agent_pos] # holding current state's value
-                best = - np.inf
-                next_states = self.get_next_states(self.env.available_actions())
 
-                for s_next, reward in next_states.items():
-                    new_positions.append(s_next)
-                    best += 0.5 * (reward + self.gamma * self.V[s_next])
+            for s in available_states:
+                actions = self.env.available_actions()
+                best_sum = -np.inf
 
-                if (best > self.V[agent_pos]):
-                    self.V[agent_pos] = best
+                for a in actions:
+                    
+                    next_states = self.get_next_states(a)
 
-                current_delta = max(current_delta, abs(self.V[agent_pos] - v))
-            positions = new_positions
-            new_positions.clear()
+                    new_sum = 0.0
+                    reward = self.env.step(a)
 
-            if current_delta < delta:
-                break
+                    for s_next, prob in next_states.items():
+                        new_sum += prob * (reward + self.gamma * self.V[s_next])
+
+                    best_sum = max(best_sum, new_sum)
+
+                self.V_new[s] = best_sum
 
 
     def get_value_table(self) -> np.ndarray:
