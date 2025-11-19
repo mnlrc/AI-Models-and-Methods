@@ -1,0 +1,167 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{eso-pic,graphicx}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[pages=some]{background}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+
+
+% -----------------------------------------------------
+
+\begin{document}
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=\paperheight]{../../general-images/background.png}}
+\clearpage
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{flushleft} \large
+    \includegraphics[height=2.0cm]{../../general-images/logo_ulb.jpg}
+    \vspace{5cm}
+   \end{flushleft}
+  \begin{center}
+
+    %Title
+        \textsc{\huge INFO-F311 - Projet d'IA 3}\\[1cm]
+
+    \HRule \\[0.7cm]
+
+        \textsc {\Huge Apprentissage par renforcement}\\[0.4cm]
+
+    \HRule \\[1.2cm]
+
+% Author and supervisor
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\begin{flushleft} \large
+\emph{Auteur:}\\
+Manuel \textsc{Rocca} - 000596086\\
+
+
+\end{flushleft}
+\end{subfigure}
+\end{figure}
+\vspace{1cm}
+
+\begin{figure}[h]
+\begin{subfigure}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Professeurs:} \\
+Tom  \textsc{Lenaerts}\\
+\emph{Assistants:} \\
+Axel \textsc{Abels} \\
+Martin \textsc{Colot} \\
+Yannick \textsc{Molinghen} \\
+Pascal \textsc{Tribel}
+\end{flushright}
+\end{subfigure}
+\end{figure}
+
+
+    \vfill
+
+    %Bottom of the page
+    {\large Année académique 2025-2026}
+  \end{center}
+
+  \end{sffamily}
+\end{titlepage}
+
+
+\clearpage
+
+
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------
+
+\section{Introduction}
+
+Pour ce troisième projet du cours d'Intelligence Artificielle, nous avons implémenté des algorithmes d'apprentissage par renforcement (\emph{reinforcement learning} en anglais). Nous utilisons toujours l'environnement \emph{LLE} comme pour les parties 1 et 2. 
+
+Trois différences (ou ajouts) sont introduites: les cases tourbillons (où l'agent meurt) la fonction de récompense, et surtout, l'aspect stochastique, non-déterministe de l'environnement. 
+
+\subsection{Environnement stochastique}
+
+Un environnement stochastique est un environnement où, lorsque l'agent effectue une action,
+nous ne sommes pas certains de l'état dans lequel il va arriver. En pratique, si un agent dans un état $s$ souhaite effectuer une action $a$ pour arriver dans un nouvel état $s'$, il y a une probabilité $p$ qu'une autre action aléatoire soit prise.
+
+\subsection{La fonction de récompense}
+
+Une fonction de récompense est une fonction qui, pour chaque transition d'état, octroie une valeur. En d'autres termes, une valeur numérique est associée à chaque action prise par l'agent afin de le diriger de manière idéalement souhaitée. 
+
+Associer une valeur adéquate est tout sauf quelque chose de simple. Des comportements inattendu peuvent survenir si cette fonction est mal définie (par exemple: si un agent doit atteindre une sortie avec une récompense positive mais que le coût de vie, le coût par pas est très élevé, il aura plus tendance à chercher un moyen de faire le moins de pas possible en trouvant un endroit plus proche pour mourir permettant une minimisation de son score total).
+
+
+\section{Value Iteration}
+
+L'algorithme \emph{Value Iteration} utilise l'équation de Bellman (\ref{eq:bellman}) de manière itérative pour mettre à jour les valeurs estimées de chaque état de l'environnement.
+
+\begin{figure}[h]
+\centering
+\begin{equation}
+    \label{eq:bellman}
+    V^{*}(s) = \max_{a} \sum_{s'} T(s,a,s') \,\big[ R(s,a,s') + \gamma V^{*}(s') \big]
+\end{equation}
+\caption{Équation de Bellman caractérisant les valeurs optimales}
+\end{figure}
+
+Les itérations de l'algorithme sont bornées par une valeur $\delta$ comme suit:
+
+\begin{equation}
+    \max_{s \in S} |V_{k+1}(s) - V_k(s)| < \delta
+\end{equation}
+
+En d'autres termes, à chaque itération, la différence/variation entre les valeurs des états précédents et les nouvelles valeurs est calculée. Si celle-ci est inférieure du seuil $\delta$ donné, l'algorithme s'arrête. \\
+L'algorithme converge après un certain nombre d'itérations. Ce nombre peut être, dans certains cas, très grand voire quasi infini. C'est pourquoi il est intéressant d'établir un seuil de variation maximal afin d'arrêter l'algorithme après une durée d'exécution raisonnable. Comme nous l'avons vu au cours théorique, parfois un dixième des itérations suffisent à obtenir des valeurs pratiquement égales aux valeurs obtenues à la convergence.
+
+\subsection{Entraînement de l'algorithme}
+
+Dans cette section, nous nous intéressons aux valeurs d'états finales obtenues par notre implé-mentation de l'algorithme \emph{Value Iteration} pour des valeurs de $\delta \in \{1, 0.1, 0.01, 0.005, 0.001\}$ ainsi que le nombre d'itérations $k$. Pour chaque valeur de $\delta$ testée, nous usons comme facteur de réduction $\gamma$ = 0.9 et la probabilité de l'environnement à prendre une autre action que celle souhaitée $p$ = 0.1\footnote{Les valeurs suivantes sont récoltées avec la seed \texttt{random.seed(0)}}.
+
+\begin{table}[h]
+    \centering
+    \label{tab:delta_k}
+    \begin{tabular}{ | r | l | }
+        \hline
+        $\delta$ & $k$ \\ \hline
+        1 & 10 \\ \hline
+        0.1 & 14 \\ \hline
+        0.01 & 18 \\ \hline
+        0.005 & 18 \\ \hline
+        0.001 & 20 \\ \hline
+    \end{tabular}
+    \caption{Nombre d'itérations de l'algorithme \emph{Value Iteration} en fonction d'un $\delta$ donné.}
+\end{table}
+
+Plus il y a d'itérations, plus nous nous approchons de la convergence. Voici les heatmaps pour $\delta$ = 1 et $\delta$ = 0.001 affichant les valeurs d'états dans l'environnement stochastique après $k$ itérations: 
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/delta=1.png}
+        \caption{$\delta$ = 1, $k$ = 10}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/delta=0_001.png}
+        \caption{$\delta$ = 0.001, $k$ = 20}
+    \end{subfigure}
+\end{figure}
+
+Nous nous rendons très vite compte que la valeurs des états les plus éloignés de l'état initial en $(0, 6)$ (en haut à gauche) convergent plus rapidement que ceux plus proches de l'état d'origine.
+
+
+
+\section{Conclusion}
+
+
+\end{document}

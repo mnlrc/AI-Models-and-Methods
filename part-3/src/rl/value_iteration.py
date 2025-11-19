@@ -2,6 +2,8 @@ import numpy as np
 from .env import Labyrinth
 import lle
 from copy import deepcopy
+import main
+import time
 
 class ValueIteration:
     """
@@ -27,6 +29,8 @@ class ValueIteration:
         smallest_variation = np.inf
         iterations = 0
         while True:
+            # uncomment if you wish to see the evolution
+            # main.plot_values(self.get_value_table())
             variation = 0
             V_next = self.V.copy()
             for s in self.env.valid_states:

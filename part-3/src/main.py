@@ -1,5 +1,4 @@
 import rl
-from rl import ValueIteration, QLearning
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -90,7 +89,7 @@ def main():
     # ==================================================== #
     #                        Seed                          #
     # ==================================================== #
-    # random.seed(0)
+    random.seed(0)
     # np.random.seed(0) # Si vous utilisez numpy pour des tirages aléatoires
 
     # ==================================================== #
@@ -99,6 +98,7 @@ def main():
     # probability of taking a random action instead of the chosen one
     probability = 0.1
     env = rl.Labyrinth(p=probability)
+    env.render()
     env.reset()
 
 
@@ -107,9 +107,9 @@ def main():
     # ==================================================== #
     # Uncomment for Value Iteration
 
-    δ = 0.001
+    δ = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
     γ = 0.9
-    algo = ValueIteration(env, 0.9)
+    algo = rl.ValueIteration(env, 0.9)
     start = time()
     algo.train(δ)
     end = time()
