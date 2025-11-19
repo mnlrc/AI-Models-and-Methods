@@ -1,9 +1,11 @@
 import rl
+from rl import ValueIteration, QLearning
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import random
 from numpy.typing import NDArray
+from time import time
 
 
 def plot_values(values: NDArray):
@@ -84,24 +86,44 @@ def random_moves(env: rl.Labyrinth, n_steps: int) -> None:
         env.render()
 
 
-if __name__ == "__main__":
-    # La seed permet d'avoir la même séquence de nombres aléatoires à chaque exécution
+def main():
+    # ==================================================== #
+    #                        Seed                          #
+    # ==================================================== #
     # random.seed(0)
     # np.random.seed(0) # Si vous utilisez numpy pour des tirages aléatoires
-    env = rl.Labyrinth(p=0.1)
+
+    # ==================================================== #
+    #             Environment initialisation               #
+    # ==================================================== #
+    # probability of taking a random action instead of the chosen one
+    probability = 0.1
+    env = rl.Labyrinth(p=probability)
     env.reset()
-    #random_moves(env, 10_000)
 
+
+    # ==================================================== #
+    #                  Value Iteration                     #
+    # ==================================================== #
     # Uncomment for Value Iteration
-    from rl import ValueIteration, QLearning
 
+    δ = 0.001
+    γ = 0.9
     algo = ValueIteration(env, 0.9)
-    algo.train(1)
+    start = time()
+    algo.train(δ)
+    end = time()
+    delta_t = (end - start) * 1000 # for ms
+    print(f"Value Iteration trained with delta δ = {δ} | discount value γ = {γ} | in {delta_t}ms")
     plot_values(algo.get_value_table())
 
     # Uncomment for Q-learning
-    policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
-    algo = QLearning(env, 0.9, 0.1, policy)
-    #algo.train(10_000)
-    action_to_symbol = ["↑", "↓", "→", "←", "·"]
-    plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)
+    # policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
+    # algo = QLearning(env, 0.9, 0.1, policy)
+    # algo.train(10_000)
+    # action_to_symbol = ["↑", "↓", "→", "←", "·"]
+    # plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)
+
+if __name__ == "__main__":
+    main()
+
