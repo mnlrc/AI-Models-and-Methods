@@ -1,6 +1,7 @@
 import numpy as np
 from .env import Labyrinth
-
+import lle
+from copy import deepcopy
 
 class ValueIteration:
     """
@@ -25,27 +26,44 @@ class ValueIteration:
 
         # difference of values of two succeeding states
         current_delta = 0
-        available_states = [self.env.agent_position]
-        probability = 1 - self.env._p
-        while True:
+        for _ in range(50):
+        # while True:
+            V_new = self.V
+            for s in self.V.keys():
+                try:
+                    self.env.set_state(s)
+                except lle.exceptions.InvalidWorldStateError:
+                    # not considering states where agent is dead; it can't make any action from there
+                    self.env.reset()
+                    continue
 
-            for s in available_states:
                 actions = self.env.available_actions()
                 best_sum = -np.inf
 
                 for a in actions:
-                    
-                    next_states = self.get_next_states(a)
+                    transitions = self.get_transitions(a)
+                    new_sum = 0
+                    # print(s)
+                    # print(a)
+                    for next_s, reward, probability in transitions:
+                        # print(probability)
+                        # print(reward)
+                        new_sum += probability * (reward + self.gamma * self.V[next_s])
+                    # print(new_sum)
+                    best_sum = max(new_sum, best_sum)
 
-                    new_sum = 0.0
-                    reward = self.env.step(a)
+                V_new[s] = best_sum
+                print("BEST SUM: ", best_sum)
+                print("PREV_VAL: ", self.V[s])
+                print(self.V)
+                print("NEW_DELTA: ", abs(self.V[s] - V_new[s]))
+                print()
+                current_delta = max(current_delta, abs(self.V[s] - V_new[s]))
 
-                    for s_next, prob in next_states.items():
-                        new_sum += prob * (reward + self.gamma * self.V[s_next])
-
-                    best_sum = max(best_sum, new_sum)
-
-                self.V_new[s] = best_sum
+            self.V = V_new
+            # print(current_delta)
+            # if current_delta < delta:
+                # break  
 
 
     def get_value_table(self) -> np.ndarray:
@@ -62,15 +80,32 @@ class ValueIteration:
 
         return results
     
-    def get_next_states(self, actions) -> dict[tuple[int, int], float]:
-        rewards = {}
-        for action in actions:
-            try:
-                reward = self.env.step(action, self.env.agent_position)
-                rewards[self.env.agent_position] = reward
-            except RuntimeError:
-                self.env.reset()
-                reward = self.env.step(action, self.env.agent_position)
-                rewards[self.env.agent_position] = reward
+    def get_transitions(self, action) -> dict[tuple[int, int], float]:
+        """
+        Retrieve all the attainable states from the agent's current position using available actions.
 
-        return rewards
+        Returns:
+        - dict[tuple[int, int], float]: A map contaning all the reachable states with the corresponding reward. 
+        """
+        transitions = []
+        actions = self.env.available_actions()
+
+        # probability of taking the wanted action
+        main_probability = 1 - self.env._p
+
+        # probability of another action being taken
+        else_probability = self.env._p / len(actions)
+
+        reward, s_next, done = self.env.deterministic_step(action)
+        # if not done:
+        transitions.append((s_next, reward, main_probability))
+
+        for a in actions:
+            if a == action:
+                continue
+            reward, s_next, done = self.env.deterministic_step(a)
+            # if done:
+                # continue
+            transitions.append((s_next, reward, else_probability))
+
+        return transitions

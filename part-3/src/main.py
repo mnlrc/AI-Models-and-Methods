@@ -96,7 +96,7 @@ if __name__ == "__main__":
     from rl import ValueIteration, QLearning
 
     algo = ValueIteration(env, 0.9)
-    algo.train(50)
+    algo.train(1)
     plot_values(algo.get_value_table())
 
     # Uncomment for Q-learning

@@ -25,7 +25,7 @@ class Labyrinth:
         self._done = False
         self._first_render = True
         all_positions = set(product(range(self._world.height), range(self._world.width)))
-        self._valid_positions = list(all_positions - set(self._world.wall_pos) - set(self._world.exit_pos))
+        self._valid_positions = list(all_positions - set(self._world.wall_pos))
 
     @property
     def map_size(self):
@@ -91,6 +91,45 @@ class Labyrinth:
                 else:
                     reward = 1.0
         return reward
+    
+    def deterministic_step(self, action: Action | int, state: tuple[int, int] | None = None):
+        """
+        Perform an action in the environment without taking into account any probability
+        and without modifying the world's internal state (reset at the end to the initial one).
+        Return the associated reward and the new state.
+        If a state is provided, set the agent to that state before executing the action.
+        If the action is an integer, it is converted to the corresponding Action enum.
+        """
+        current_done = self._done
+        current_state = self.agent_position
+
+        if self._done:
+            raise RuntimeError("Cannot step in a finished environment. Call `reset()` first.")
+        if state is not None:
+            self.set_state(state)
+        if isinstance(action, int):
+            action = Action(action)
+        events = self._world.step(action)
+        reward = 0.0
+        for event in events:
+            if event.event_type == EventType.AGENT_DIED:
+                self._done = True
+                reward -1.0
+            if event.event_type == EventType.AGENT_EXIT:
+                self._done = True
+                if self.agent_position == BOTTOM_LEFT_EXIT:
+                    reward = 10.0
+                else:
+                    reward = 1.0
+
+        next_state = self.agent_position
+        next_done = self._done
+
+        # resetting the world state to previous one
+        self._done = current_done
+        self.set_state(current_state)
+
+        return reward, next_state, next_done
 
     @property
     def agent_position(self) -> tuple[int, int]:
