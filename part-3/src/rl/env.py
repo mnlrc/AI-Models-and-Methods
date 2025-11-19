@@ -25,7 +25,7 @@ class Labyrinth:
         self._done = False
         self._first_render = True
         all_positions = set(product(range(self._world.height), range(self._world.width)))
-        self._valid_positions = list(all_positions - set(self._world.wall_pos))
+        self._valid_positions = list(all_positions - set(self._world.wall_pos) - set(self._world.exit_pos))
 
     @property
     def map_size(self):
