@@ -14,7 +14,7 @@ class ValueIteration:
         self.env = env
         self.gamma = gamma
         # setting up states and state values (all zero when starting)
-        self.V = {s: 0 for s in self.env.valid_states}
+        self.V = np.zeros(shape=self.env.map_size)
 
     def train(self, delta: float):
         """
@@ -24,16 +24,16 @@ class ValueIteration:
         - delta (float): The threshold for convergence.
         """
 
-        # difference of values of two succeeding states
-        current_delta = 0
-        for _ in range(50):
-        # while True:
-            V_new = self.V
-            for s in self.V.keys():
+        smallest_variation = np.inf
+        iterations = 0
+        while True:
+            variation = 0
+            V_next = self.V.copy()
+            for s in self.env.valid_states:
                 try:
                     self.env.set_state(s)
                 except lle.exceptions.InvalidWorldStateError:
-                    # not considering states where agent is dead; it can't make any action from there
+                    # not considering invalid states
                     self.env.reset()
                     continue
 
@@ -43,27 +43,30 @@ class ValueIteration:
                 for a in actions:
                     transitions = self.get_transitions(a)
                     new_sum = 0
-                    # print(s)
-                    # print(a)
                     for next_s, reward, probability in transitions:
-                        # print(probability)
-                        # print(reward)
                         new_sum += probability * (reward + self.gamma * self.V[next_s])
-                    # print(new_sum)
+                    
                     best_sum = max(new_sum, best_sum)
 
-                V_new[s] = best_sum
-                print("BEST SUM: ", best_sum)
-                print("PREV_VAL: ", self.V[s])
-                print(self.V)
-                print("NEW_DELTA: ", abs(self.V[s] - V_new[s]))
-                print()
-                current_delta = max(current_delta, abs(self.V[s] - V_new[s]))
+                V_next[s] = best_sum
+            
+            variation = np.max(np.abs(self.V - V_next))
+            self.V = V_next
 
-            self.V = V_new
-            # print(current_delta)
-            # if current_delta < delta:
-                # break  
+            if variation < delta:
+                print()
+                break
+
+            # for printing purposes
+            iterations += 1
+            if variation < smallest_variation:
+                smallest_variation = variation
+            print(
+                f"\rIterations: {iterations} | Δ: {smallest_variation:.4f} (δ: {delta})",
+                end="",
+                flush=True,
+            )
+
 
 
     def get_value_table(self) -> np.ndarray:
@@ -73,12 +76,7 @@ class ValueIteration:
         Returns:
         - np.ndarray: A 2D array representing the estimated values for each state.
         """
-        height, width = self.env.map_size
-        results = np.zeros((height, width), dtype=np.float64)
-        for pos, value in self.V.items():
-            results[pos] = value
-
-        return results
+        return self.V
     
     def get_transitions(self, action) -> dict[tuple[int, int], float]:
         """
@@ -97,15 +95,12 @@ class ValueIteration:
         else_probability = self.env._p / len(actions)
 
         reward, s_next, done = self.env.deterministic_step(action)
-        # if not done:
         transitions.append((s_next, reward, main_probability))
 
         for a in actions:
             if a == action:
                 continue
             reward, s_next, done = self.env.deterministic_step(a)
-            # if done:
-                # continue
             transitions.append((s_next, reward, else_probability))
 
         return transitions
