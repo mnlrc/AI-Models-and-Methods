@@ -84,10 +84,12 @@ class ValueIteration:
     
     def get_transitions(self, action) -> dict[tuple[int, int], float]:
         """
-        Retrieve all the attainable states from the agent's current position using available actions.
+        Retrieve all the attainable states from the agent's current position using available actions
+        without changing the environment.
 
         Returns:
-        - dict[tuple[int, int], float]: A map contaning all the reachable states with the corresponding reward. 
+        - list[tuple[tuple[int, int], float, float]]: A map contaning all the reachable states 
+        with the corresponding reward and probability.
         """
         transitions = []
         actions = self.env.available_actions()
@@ -98,13 +100,13 @@ class ValueIteration:
         # probability of another action being taken
         else_probability = self.env._p / len(actions)
 
-        reward, s_next, done = self.env.deterministic_step(action)
+        reward, s_next = self.env.deterministic_step(action)
         transitions.append((s_next, reward, main_probability))
 
         for a in actions:
             if a == action:
                 continue
-            reward, s_next, done = self.env.deterministic_step(a)
+            reward, s_next = self.env.deterministic_step(a)
             transitions.append((s_next, reward, else_probability))
 
         return transitions

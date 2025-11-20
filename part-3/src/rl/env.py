@@ -123,13 +123,12 @@ class Labyrinth:
                     reward = 1.0
 
         next_state = self.agent_position
-        next_done = self._done
 
         # resetting the world state to previous one
         self._done = current_done
         self.set_state(current_state)
 
-        return reward, next_state, next_done
+        return reward, next_state
 
     @property
     def agent_position(self) -> tuple[int, int]:
