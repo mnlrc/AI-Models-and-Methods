@@ -100,15 +100,16 @@ def main():
     env = rl.Labyrinth(p=probability)
     env.reset()
 
-
-    # ==================================================== #
-    #                   Value Iteration                    #
-    # ==================================================== #
+    # print(" \
+    # ==================================================== \
+                    #   Value Iteration                    \
+    # ==================================================== \
+    # ")
     # Uncomment for Value Iteration
 
     # δ = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
     # γ = 0.9
-    # algo = rl.ValueIteration(env, 0.9)
+    # algo = rl.ValueIteration(env=env, gamma=0.9)
     # start = time()
     # algo.train(δ)
     # end = time()
@@ -121,8 +122,8 @@ def main():
     #                      Q-learning                      #
     # ==================================================== #
     # Uncomment for Q-learning
-    policy = rl.qlearning.SoftmaxPolicy(100)
-    algo = rl.QLearning(env, 0.9, 0.1, policy)
+    policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
+    algo = rl.QLearning(env=env, gamma=0.9, alpha=0.1, policy=policy)
     algo.train(10_000)
     action_to_symbol = ["↑", "↓", "→", "←", "·"]
     plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)

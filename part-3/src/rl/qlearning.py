@@ -18,16 +18,16 @@ class EpsilonGreedyPolicy(Policy):
 
     def select_action(self, qvalues: npt.NDArray[np.float32], current_state: tuple[int, int], 
                       available_actions: list[lle.Action]) -> int:
-        # print("EPSILON GREEDY POLICY")
         r = random.random()
         if r <= self.epsilon:
+            # picking the action with the best Q-value
+            h, w = current_state
+            q_state_values = qvalues[h, w]
+            action = max(available_actions, key=lambda a: q_state_values[a.value]).value
+        else:
             # random action
             action = random.choice(available_actions).value
-        else:
-            # picking the action with the best Q-value
-            q_state_values = qvalues[current_state]
-            action = max(available_actions, key=lambda a: q_state_values[a.value]).value
-
+    
         return action
 
 class SoftmaxPolicy(Policy):
@@ -38,7 +38,6 @@ class SoftmaxPolicy(Policy):
 
     def select_action(self, qvalues: npt.NDArray[np.float32], current_state: tuple[int, int],
                        available_actions: list[lle.Action]) -> int:
-        print("SOFTMAX POLICY ACTION CHOICE")
         sum = 0
         h, w = current_state
         for a in available_actions:
@@ -47,13 +46,11 @@ class SoftmaxPolicy(Policy):
 
         # contains an associated probability for each action
         probabilities = []
-        print(probabilities)
         for a in available_actions:
             a_int = a.value
             num = np.e ** (qvalues[h, w, a_int] / self.temperature)
             probabilities.append(num / sum)
 
-        print(probabilities)
         action = random.choices(population=available_actions, weights=probabilities, k=1)[0]
         return action.value
 
@@ -67,14 +64,14 @@ class QLearning:
         self.gamma = gamma
         self.alpha = alpha
         self.policy = policy
-        # action values in integer:
+        # action values in integer (for indexing):
         # - North = 0
         # - South = 1
         # - East = 2
         # - West = 3
         # - Stay = 4
         h, w = self.env.map_size
-        self.q_table = np.zeros(shape=(h, w, 5))
+        self.q_table = np.zeros(shape=(h, w, lle.Action.N))
 
     def get_q_table(self) -> npt.NDArray[np.float32]:
         """
@@ -97,16 +94,12 @@ class QLearning:
         for i in range(n_steps):
             counter += 1
             if self.env.is_done:
-                print(f"Agent has taken {counter} steps before dying")
                 values.append(counter)
                 counter = 0
                 self.env.reset()
 
             current_state = self.env.agent_position        
             actions = self.env.available_actions()
-            # print(s)
-            # print(self.env.agent_position)
-            # print(actions)
 
             # by the policy
             chosen_action = self.policy.select_action(self.q_table, current_state, actions)
@@ -114,12 +107,12 @@ class QLearning:
             reward = self.env.step(chosen_action, current_state)
             s_next = self.env.agent_position
             h_next, w_next = s_next
+            h, w = current_state
             s_next_value = np.max(self.q_table[h_next, w_next])
 
-            h, w = current_state
-            # print(self.q_table[current_state, chosen_action])
-            # print()
-            # print(self.q_table[h, w, chosen_action])
+            # other way to calculate s_next_value (found on https://www.baeldung.com/cs/reinforcement-learning-neural-network)
+            # s_next_value = np.max(self.q_table[h_next, w_next] - self.q_table[h, w, chosen_action])
+
             self.q_table[h, w, chosen_action] = (1 - self.alpha) \
                 * self.q_table[h, w, chosen_action] \
                 + self.alpha * (reward + self.gamma * s_next_value)
