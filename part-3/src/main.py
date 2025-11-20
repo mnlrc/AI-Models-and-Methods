@@ -98,31 +98,34 @@ def main():
     # probability of taking a random action instead of the chosen one
     probability = 0.1
     env = rl.Labyrinth(p=probability)
-    env.render()
     env.reset()
 
 
     # ==================================================== #
-    #                  Value Iteration                     #
+    #                   Value Iteration                    #
     # ==================================================== #
     # Uncomment for Value Iteration
 
-    δ = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
-    γ = 0.9
-    algo = rl.ValueIteration(env, 0.9)
-    start = time()
-    algo.train(δ)
-    end = time()
-    delta_t = (end - start) * 1000 # for ms
-    print(f"Value Iteration trained with delta δ = {δ} | discount value γ = {γ} | in {delta_t}ms")
-    plot_values(algo.get_value_table())
+    # δ = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    # γ = 0.9
+    # algo = rl.ValueIteration(env, 0.9)
+    # start = time()
+    # algo.train(δ)
+    # end = time()
+    # delta_t = (end - start) * 1000 # for ms
+    # print(f"Value Iteration trained with delta δ = {δ} | discount value γ = {γ} | in {delta_t}ms")
+    # plot_values(algo.get_value_table())
 
+
+    # ==================================================== #
+    #                      Q-learning                      #
+    # ==================================================== #
     # Uncomment for Q-learning
-    # policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
-    # algo = QLearning(env, 0.9, 0.1, policy)
-    # algo.train(10_000)
-    # action_to_symbol = ["↑", "↓", "→", "←", "·"]
-    # plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)
+    policy = rl.qlearning.SoftmaxPolicy(100)
+    algo = rl.QLearning(env, 0.9, 0.1, policy)
+    algo.train(10_000)
+    action_to_symbol = ["↑", "↓", "→", "←", "·"]
+    plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)
 
 if __name__ == "__main__":
     main()
