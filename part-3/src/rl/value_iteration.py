@@ -82,7 +82,7 @@ class ValueIteration:
         """
         return self.V
     
-    def get_transitions(self, action) -> dict[tuple[int, int], float]:
+    def get_transitions(self, action) -> list[tuple[tuple[int, int], float, float]]:
         """
         Retrieve all the attainable states from the agent's current position using available actions
         without changing the environment.
