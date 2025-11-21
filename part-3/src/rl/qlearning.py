@@ -2,6 +2,7 @@ import numpy as np
 import numpy.typing as npt
 import lle
 import random
+import math
 from .env import Labyrinth
 
 
@@ -11,33 +12,78 @@ class Policy:
 
 
 class EpsilonGreedyPolicy(Policy):
-    def __init__(self, epsilon: float):
+    def __init__(self, epsilon: float | bool):
         super().__init__()
-        assert 0 <= epsilon <= 1, "Epsilon must be in [0, 1]"
-        self.epsilon = epsilon
+        if isinstance(epsilon, float) or isinstance(epsilon, int):
+            assert 0 <= epsilon <= 1, "Epsilon must be in [0, 1]"
+            self.epsilon = epsilon
+            self.is_dimishing = False
+        elif isinstance(epsilon, bool):
+            self.epsilon = 1
+            self.is_dimishing = True
+        self.iteration = 0
+
+    def __epsilon_regression(self):
+        self.iteration += 1
+        self.epsilon = -0.00_00_495 * self.iteration + 1
 
     def select_action(self, qvalues: npt.NDArray[np.float32], current_state: tuple[int, int], 
                       available_actions: list[lle.Action]) -> int:
-        r = random.random()
-        if r <= self.epsilon:
-            # picking the action with the best Q-value
+        
+        if self.is_dimishing:
+            self.__epsilon_regression()
+
+
+        ############# TEMP ##################### for experimentation and i swear the conditions are inverted in the directives !!!!!!!!!!!!
+        # r = random.random()
+        # if r <= self.epsilon:
+            # random action
+            # action = random.choice(available_actions).value
+        # else:
+# 
+                        # picking the action with the best Q-value
+            # h, w = current_state
+            # q_state_values = qvalues[h, w]
+            # action = max(available_actions, key=lambda a: q_state_values[a.value]).value
+
+        temp = [True, False]
+        probs = [self.epsilon, 1 - self.epsilon]
+        choice = random.choices(population=temp, weights=probs, k = 1)[0]
+        if choice:
+
+            action = random.choice(available_actions).value
+            
+        else:
             h, w = current_state
             q_state_values = qvalues[h, w]
             action = max(available_actions, key=lambda a: q_state_values[a.value]).value
-        else:
-            # random action
-            action = random.choice(available_actions).value
-    
         return action
 
 class SoftmaxPolicy(Policy):
-    def __init__(self, temperature: float):
+    def __init__(self, temperature: float | bool):
         super().__init__()
-        assert temperature > 0, "Temperature must be positive"
-        self.temperature = temperature
+
+        if isinstance(temperature, float) or isinstance(temperature, int):
+            assert temperature > 0, "Temperature must be positive"
+            self.temperature = temperature
+            self.is_dimishing = False
+        elif isinstance(temperature, bool):
+            self.temperature = 100
+            self.is_dimishing = True
+        self.iteration = 0
+
+    def __temperature_regression(self):
+        self.iteration += 1
+        self.temperature = 100 * math.e ** (
+            -(( 4 * math.log(math.e)) / 20_000) # 4ln(10)/20k
+                * self.iteration)
 
     def select_action(self, qvalues: npt.NDArray[np.float32], current_state: tuple[int, int],
                        available_actions: list[lle.Action]) -> int:
+        
+        if self.is_dimishing:
+            self.__temperature_regression()
+
         sum = 0
         h, w = current_state
         for a in available_actions:
@@ -82,20 +128,27 @@ class QLearning:
         """
         return self.q_table
 
-    def train(self, n_steps: int):
+    def train(self, n_steps: int) -> list[int]:
         """
         Train the Q-learning agent over a specified number of steps.
 
         Parameters:
         - n_steps (int): Total number of steps for training.
+
+        Returns:
+        - list[int]: A list containing the score values for each episode.
         """
         counter = 0
         values = []
+        score = 0
+        episode_scores = []
         for i in range(n_steps):
             counter += 1
             if self.env.is_done:
                 values.append(counter)
                 counter = 0
+                episode_scores.append(score)
+                score = 0
                 self.env.reset()
 
             current_state = self.env.agent_position        
@@ -105,6 +158,7 @@ class QLearning:
             chosen_action = self.policy.select_action(self.q_table, current_state, actions)
 
             reward = self.env.step(chosen_action, current_state)
+            score += reward
             s_next = self.env.agent_position
             h_next, w_next = s_next
             h, w = current_state
@@ -124,3 +178,6 @@ class QLearning:
         
         print()
         print(f"Average steps taken by the agent before dying: {sum(values) / len(values)}")
+        print(f"Average score per epidsode: {sum(episode_scores) / len(episode_scores)}")
+        
+        return episode_scores
