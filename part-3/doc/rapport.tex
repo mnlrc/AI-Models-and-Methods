@@ -5,6 +5,7 @@
 \usepackage{titlesec}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage[pages=some]{background}
@@ -118,7 +119,8 @@ Les itérations de l'algorithme sont bornées par une valeur $\delta$ comme suit
     \max_{s \in S} |V_{k+1}(s) - V_k(s)| < \delta
 \end{equation}
 
-En d'autres termes, à chaque itération, la différence/variation entre les valeurs des états précédents et les nouvelles valeurs est calculée. Si celle-ci est inférieure du seuil $\delta$ donné, l'algorithme s'arrête. \\
+En d'autres termes, à chaque itération, la différence/variation entre les valeurs des états précédents et les nouvelles valeurs est calculée en appliquant
+l'équation \ref{eq:bellman}. Si celle-ci est inférieure du seuil $\delta$ donné, l'algorithme s'arrête. \\
 L'algorithme converge après un certain nombre d'itérations. Ce nombre peut être, dans certains cas, très grand voire quasi infini. C'est pourquoi il est intéressant d'établir un seuil de variation maximal afin d'arrêter l'algorithme après une durée d'exécution raisonnable. Comme nous l'avons vu au cours théorique, parfois un dixième des itérations suffisent à obtenir des valeurs pratiquement égales aux valeurs obtenues à la convergence.
 
 \subsection{Entraînement de l'algorithme}
@@ -157,9 +159,27 @@ Plus il y a d'itérations, plus nous nous approchons de la convergence. Voici le
     \end{subfigure}
 \end{figure}
 
-Nous nous rendons très vite compte que la valeurs des états les plus éloignés de l'état initial en $(0, 6)$ (en haut à gauche) convergent plus rapidement que ceux plus proches de l'état d'origine.
+Nous nous rendons très vite compte que la valeurs des états les plus éloignés de l'état initial en $(0, 6)$ (en haut à droite) convergent plus rapidement que ceux plus proches de l'état d'origine.
+Cela s'explique par le fait que toutes les valeurs d'états calculées par \emph{Value Iteration} auront une valeur nulle tant qu'une
+récompense n'a pas été trouvée. Démontrons cela de manière concise:
+
+\begin{proof}[Démonstration]
+    En observant l'équation \ref{eq:bellman}, il est clair que la valeur est nulle dans deux cas:
+    \begin{itemize}
+        \item si $T(s,a,s')$ est nulle. Or cette valeur n'est jamais nulle, il y a toujours une probabilité donnée de passer d'un état $s$
+        à un état $s'$ suivant.
+        \item si $R(s,a,s') + \gamma V^{*}(s')$ est nul. Initialement tous les $V(s)$ sont nuls, donc le seul terme qui peut donner une
+        valeur non-nulle à cette expression est la récompense $R(s,a,s')$ ($\gamma$ est une constante non-nulle).
+    \end{itemize} 
+
+    En somme, les valeurs d'état calculées se propagent à partir des transitions accordant une récompense expliquant ainsi la convergence
+    plus rapide dans ces environs.
+\end{proof}
+
+\subsection{Stratégie optimale}
 
 
+\section{Q-learning}
 
 \section{Conclusion}
 

@@ -57,7 +57,7 @@ class ValueIteration:
             variation = np.max(np.abs(self.V - V_next))
             self.V = V_next
 
-            if variation < delta:
+            if variation <= delta:
                 print()
                 break
 

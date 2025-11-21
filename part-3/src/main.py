@@ -100,21 +100,19 @@ def main():
     env = rl.Labyrinth(p=probability)
     env.reset()
 
-    # print(" \
-    # ==================================================== \
-                    #   Value Iteration                    \
-    # ==================================================== \
-    # ")
+    # ==================================================== #
+    #                   Value Iteration                    #
+    # ==================================================== #
     # Uncomment for Value Iteration
 
-    # δ = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+    # δ = 0
     # γ = 0.9
-    # algo = rl.ValueIteration(env=env, gamma=0.9)
+    # algo = rl.ValueIteration(env=env, gamma=γ)
     # start = time()
     # algo.train(δ)
     # end = time()
     # delta_t = (end - start) * 1000 # for ms
-    # print(f"Value Iteration trained with delta δ = {δ} | discount value γ = {γ} | in {delta_t}ms")
+    # print(f"Value Iteration trained with Delta δ = {δ} | Discount value γ = {γ} | In {delta_t} milliseconds.")
     # plot_values(algo.get_value_table())
 
 
@@ -122,9 +120,27 @@ def main():
     #                      Q-learning                      #
     # ==================================================== #
     # Uncomment for Q-learning
-    policy = rl.qlearning.EpsilonGreedyPolicy(0.1)
-    algo = rl.QLearning(env=env, gamma=0.9, alpha=0.1, policy=policy)
-    algo.train(10_000)
+
+    # Choose one of the two policies:
+    # 𝜀 = 0.1
+    # policy = rl.qlearning.EpsilonGreedyPolicy(𝜀)
+
+    𝜏 = 0.01
+    policy = rl.qlearning.SoftmaxPolicy(𝜏)
+
+    γ = 0.9
+    𝑎 = 0.1
+    n_steps = 20_000
+    algo = rl.QLearning(env=env, gamma=γ, alpha=𝑎, policy=policy)
+    start = time()
+    algo.train(n_steps)
+    end = time()
+    delta_t = (end - start) * 1000 # for ms
+    print(f"Q-learning trained with Discount value γ = {γ} | Learning rate 𝑎 = {𝑎} | In {delta_t} milliseconds.")
+    if isinstance(policy, rl.qlearning.SoftmaxPolicy):
+        print(f"Policy used: Softmax with Temperature value 𝜏 = {𝜏}")
+    else:
+        print(f"Policy used: Epsilon-Greedy with Epsilon value 𝜀 = {𝜀}")
     action_to_symbol = ["↑", "↓", "→", "←", "·"]
     plot_qvalues(algo.get_q_table(), action_symbols=action_to_symbol)
 
