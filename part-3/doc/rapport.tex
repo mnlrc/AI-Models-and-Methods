@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{eso-pic,graphicx}
-\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm, footnotesep=3cm]{geometry}
 \usepackage{titlesec}
 \usepackage{hyperref}
 \usepackage{amsmath}
@@ -110,9 +110,8 @@ L'algorithme \emph{Value Iteration} utilise l'équation de Bellman (\ref{eq:bell
     \label{eq:bellman}
     V^{*}(s) = \max_{a} \sum_{s'} T(s,a,s') \,\big[ R(s,a,s') + \gamma V^{*}(s') \big]
 \end{equation}
-\caption{Équation de Bellman caractérisant les valeurs optimales}
+\caption*{Équation de Bellman caractérisant les valeurs optimales}
 \end{figure}
-
 Les itérations de l'algorithme sont bornées par une valeur $\delta$ comme suit:
 
 \begin{equation}
@@ -125,8 +124,7 @@ L'algorithme converge après un certain nombre d'itérations. Ce nombre peut êt
 
 \subsection{Entraînement de l'algorithme}
 
-Dans cette section, nous nous intéressons aux valeurs d'états finales obtenues par notre implé-mentation de l'algorithme \emph{Value Iteration} pour des valeurs de $\delta \in \{1, 0.1, 0.01, 0.005, 0.001\}$ ainsi que le nombre d'itérations $k$. Pour chaque valeur de $\delta$ testée, nous usons comme facteur de réduction $\gamma$ = 0.9 et la probabilité de l'environnement à prendre une autre action que celle souhaitée $p$ = 0.1\footnote{Les valeurs suivantes sont récoltées avec la seed \texttt{random.seed(0)}}.
-
+Dans cette section, nous nous intéressons aux valeurs d'états finales obtenues par notre implé-mentation de l'algorithme \emph{Value Iteration} pour des valeurs de $\delta \in \{1, 0.1, 0.01, 0.005, 0.001\}$ ainsi que le nombre d'itérations $k$. Pour chaque valeur de $\delta$ testée, nous usons comme facteur de réduction $\gamma$ = 0.9.
 \begin{table}[h]
     \centering
     \label{tab:delta_k}
@@ -176,10 +174,131 @@ récompense n'a pas été trouvée. Démontrons cela de manière concise:
     plus rapide dans ces environs.
 \end{proof}
 
+Pour conclure cette section nous souhaitons proposer une analyse du nombre d'itérations requises pour atteindre la convergence.
+Pour ce faire, nous avons changé la condition d'arrêt de notre algorithme. Dorénavant, il s'arrête dès que la variation entre les
+valeurs d'états de deux itérations successives est nulle. Ce faisant, nous sommes arrivés à $k$ = 50 (et une heatmap exactement identique
+à celle obtenue avec un $\delta$ = 0.001 en $k$ = 20 itérations).
+
+Ceci complète donc l'hypothèse fournie dans au cours théorique concernant l'utilité d'un grand nombre d'itérations. En effet, après la moitié 
+du nombre d'itérations requises pour obtenir la convergence nous obtenons déjà des valeurs similaires voire identiques.
+
+
 \subsection{Stratégie optimale}
 
 
 \section{Q-learning}
+
+L'algorithme \emph{Q-learning} calcule, pour chaque état et pour chaque action possible à partir de cet état, une valeur réelle. À partir
+de cette valeur réelle, il détermine une stratégie optimale à suivre en prenant l'action ayant la valeur la plus élevée pour
+chaque état. 
+
+\begin{figure}[h]
+\centering   
+    \begin{equation}
+    Q(s,a) \leftarrow (1 - \alpha)\,Q(s,a)
+    + \alpha \big[ R(s,a,s') + \gamma\,V(s') \big]
+    \end{equation}
+\caption*{Mise à jour de la \emph{q-value} en un état $s$ en prenant une action $a$, avec $ V(s) = \max_{a \in A} Q(s,a)$}
+\end{figure}
+
+
+
+Contrairement à \emph{Value Iteration} qui ne considère que des transitions en n'interagissant pas avec l'environnement, \emph{Q-learning}
+fait un apprentissage \emph{offline} en interagissant directement avec l'environnement. En d'autres termes, si l'agent
+souhaite déterminer la récompense obtenue en passant de son état $s$ à un nouvel état $s'$ avec une action $a$ il doit 
+exécuter cette action. Donc s'il doit mourir pour savoir que ce n'est pas bon, il le fera.
+
+Une autre différence par rapport au \emph{Value Iteration} est le choix des actions. Le \emph{Q-learning} choisit l'action suivante
+sur base d'une politique bien déterminée. Il nous a été demandé d'en implémenter deux:
+
+\begin{itemize}
+    \item Exploration $\varepsilon$-greedy: il y a une probabilité $\varepsilon$ de choisir une action aléatoire et une probabilité
+    $1 - \varepsilon$ de prendre une action qui maximise $Q(s, a)$. Ceci est formalisé par l'équation fournie dans les consignes reprise
+    ci-dessous (avec $r$ un nombre uniformément aléatoire entre 0 et 1):
+        \begin{equation}
+            \centering
+            \label{eq:epsilongreedy}
+            \pi(s) =
+            \begin{cases}
+                \arg\max_{a \in A} Q(s,a) & \text{si } r \le \varepsilon \\
+                a \sim A & \text{sinon}
+            \end{cases}
+        \end{equation}
+    En fait, $\varepsilon$ est une variable qui, plus elle est élevée, plus elle favorise l'exploration et, plus elle est basse,
+    plus elle favorise l'exploitation. L'exploration est lorque l'agent teste une action aléatoire indépendamment des \emph{q-values}
+    déjà calculées pour en découvrir de nouvelles (et potentiellement découvrir d'autres récompenses). L'exploitation fait tout l'inverse.
+    Elle choisit l'action avec la \emph{q-value} la plus élevée. Elle "ne prend pas de risques". 
+    \item Exploration softmax: utilise la fonction softmax adaptée à notre environnement. L'é-quation fournie dans les consignes est
+    la suivante (avec $\tau$ la "température"):
+        \begin{equation}
+            \pi_{a}(s) = 
+            \frac{ e^{\frac{Q(s,a)}{\tau}} }
+                 { \sum_{a' \in A} e^{\frac{Q(s,a')}{\tau}} }
+        \end{equation}
+    En termes concrets, pour un état $s$ donné, l'équation va calculer, pour chaque action $a$ disponible, une certaine probabilité.
+    Donc chaque action sera pondérée d'une probabilité $p$. Nous choisissons ensuite une action aléatoirement en prenant en compte des
+    poids associés. 
+\end{itemize}
+
+\subsection{Entraînement de l'algorithme}
+
+Nous analysons dans cette section les performances de l'agent dans l'environnement en utilisant l'algorithme \emph{Q-learning}
+sur 20 000 itérations, interactions avec l'environnement en utilisant des paramètres et des politiques différentes.
+
+Les paramètres généraux sont:
+\begin{itemize}
+    \item l'environnement: probabilité de prendre une action aléatoire au lieu de celle choisie $p$ = 0.1
+    \item l'algorithme: \emph{learning rate}\footnote{Taux définissant à quel point une ancienne valeur remplace la nouvelle; un taux plus élevé permet à
+    l'agent de s'adapter plus rapidement aux nouvelles valeurs calculées tandis qu'un taux plus bas nous aurons des résultats plus stables
+    mais un apprentissage plus lent.} $\alpha$ = 0.1 et \emph{discount factor} $\gamma$ = 0.9 
+\end{itemize}
+
+\subsubsection{Exploration $\varepsilon$-greedy}
+
+Comme exprimé ci-dessus, chaque expérience comporte 20 000 itérations. Nous utilisons un $\varepsilon$ différent par expérience.
+Nous en faisons quatre. Pour les trois premières, nous utilisons $\varepsilon \in \{0, 0.1, 0.5\}$ tandis que pour la
+dernière nous faisons diminuer $\varepsilon$ linéairement de 1 à 0.01 au cours de l'entraînement.
+
+\subsubsection{Exploration softmax}
+
+Pour cette politique d'exploration nous utilisons les valeurs de température $\tau \in \{0.01, 1, \\10\}$ pour
+les trois premières expériences. La dernière fait usage d'une fonction diminuant exponentiellement\footnote{Pour ce faire nous
+avons utilisé l'expression $f(x) = f(x_0)e^{-kx}$. Nous avons $f(x)$, $x$ et $x_0$. Il suffit donc de résoudre une
+équation pour obtenir finalement $k$ = $\frac{4\ln(10)}{20000}$.} allant de 100 à 0.01 au cours de l'entraînement.
+
+
+\subsubsection{Résultats}
+
+Voici le graphique reprenant les résultats des huit expériences menées:
+
+% GRAPH
+
+
+\section{Discussion}
+
+Cette section vise à répondre aux questionnements initiés à la section 4.3.\ des consignes.
+
+\subsection{Aspect aléatoire}
+
+L'algorithme \emph{Value Iteration}, ne comprend pas d'aspect aléatoire. En effet pour calculer la valeur 
+d'un état $s$, nous considérons chaque action $a$ possible à partir de $s$ pour arriver à différents états 
+$s'$. Chaque action possède une certaine probabilité d'être effectuée mais comme nous travaillons sur toutes
+les transitions possibles (la somme de tous les états $s'$), nous arrivons à "une probabilité totale de 1".
+Il faut plutôt voir les probabilités associées à chaque action $a$ comme un poids dans l'expression permettant
+de mieux valuer une transition d'un état $s$ à un état $s'$ avec une action $a$. Pour concrétiser tout ça,
+nous avons retiré la seed rendant ainsi notre algorithme en théorie aléatoire. Or, à chaque exécution (avec
+les mêmes paramètres bien entendu), nous avons obtenus des heatmaps complètement identiques. \\
+
+\noindent À l'opposé, l'algorithme \emph{Q-learning} interagit directement avec l'environnement qui possède une
+probabilité $p$ d'effectuer une action aléatoire au lieu de l'action souhaitée. De plus, les politiques d'exploration
+ont également un aspect aléatoire. En effet, la politique $\varepsilon$-greedy comprend une probabilité $\varepsilon$
+de choisir une action aléatoire (encourageant l'exploration) et, la politique softmax qui calcule un poids, une
+probabilité pour chaque action avant d'en sélectionner une aléatoirement en prenant en compte le poids calculé.
+
+\subsection{Stratégies d'exploration}
+
+
+
 
 \section{Conclusion}
 
