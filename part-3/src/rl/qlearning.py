@@ -34,29 +34,16 @@ class EpsilonGreedyPolicy(Policy):
             self.__epsilon_regression()
 
 
-        ############# TEMP ##################### for experimentation and i swear the conditions are inverted in the directives !!!!!!!!!!!!
-        # r = random.random()
-        # if r <= self.epsilon:
-            # random action
-            # action = random.choice(available_actions).value
-        # else:
-# 
-                        # picking the action with the best Q-value
-            # h, w = current_state
-            # q_state_values = qvalues[h, w]
-            # action = max(available_actions, key=lambda a: q_state_values[a.value]).value
-
-        temp = [True, False]
-        probs = [self.epsilon, 1 - self.epsilon]
-        choice = random.choices(population=temp, weights=probs, k = 1)[0]
-        if choice:
-
-            action = random.choice(available_actions).value
-            
-        else:
+        r = random.random()
+        if r <= self.epsilon:
+            # picking the action with the best Q-value
             h, w = current_state
             q_state_values = qvalues[h, w]
             action = max(available_actions, key=lambda a: q_state_values[a.value]).value
+        else:
+            # random action
+            action = random.choice(available_actions).value
+            
         return action
 
 class SoftmaxPolicy(Policy):
