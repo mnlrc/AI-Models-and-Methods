@@ -38,6 +38,7 @@
 
 % Author and supervisor
 \begin{figure}[h]
+\addtocounter{figure}{-1}
 \begin{subfigure}{0.5\textwidth}
 \begin{flushleft} \large
 \emph{Auteur:}\\
@@ -50,6 +51,7 @@ Manuel \textsc{Rocca} - 000596086\\
 \vspace{1cm}
 
 \begin{figure}[h]
+\addtocounter{figure}{-1}
 \begin{subfigure}{0.4\textwidth}
 \begin{flushright} \large
 \emph{Professeurs:} \\
@@ -87,6 +89,13 @@ Pascal \textsc{Tribel}
 Pour ce troisième projet du cours d'Intelligence Artificielle, nous avons implémenté des algorithmes d'apprentissage par renforcement (\emph{reinforcement learning} en anglais). Nous utilisons toujours l'environnement \emph{LLE} comme pour les parties 1 et 2. 
 
 Trois différences (ou ajouts) sont introduites: les cases tourbillons (où l'agent meurt) la fonction de récompense, et surtout, l'aspect stochastique, non-déterministe de l'environnement. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/initial_env.png}
+    \caption{Environnement utilisé}
+    \label{fig:env}
+\end{figure}
 
 \subsection{Environnement stochastique}
 
@@ -155,6 +164,7 @@ Plus il y a d'itérations, plus nous nous approchons de la convergence. Voici le
         \includegraphics[width=\linewidth]{graphs/delta=0_001.png}
         \caption{$\delta$ = 0.001, $k$ = 20}
     \end{subfigure}
+    \caption{Heatmaps générées par l'algorithme \emph{Value Iteration}}
 \end{figure}
 
 Nous nous rendons très vite compte que la valeurs des états les plus éloignés de l'état initial en $(0, 6)$ (en haut à droite) convergent plus rapidement que ceux plus proches de l'état d'origine.
@@ -185,6 +195,46 @@ du nombre d'itérations requises pour obtenir la convergence nous obtenons déj�
 
 \subsection{Stratégie optimale}
 
+Récupérer la stratégie optimale consiste à récupérer la meilleure action pour chaque état. Cela est
+aisément faisable en créant une nouvelle matrice $optimal\_policy = np.zeros(shape=env.map.size)$.
+Ensuite, au lieu d'y placer, pour un état $s$ donné, la meilleure valeur pour cet état, nous y plaçons
+la meilleure action associée à cette meilleure valeur.
+
+La politique optimale peut changer en fonction du paramètre $p$ de l'environnement (\ref{fig:env}).
+Voici nos résultats pour $p = 0.1$ et $p = 0.9$:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/policy-p=0.1.png}
+        \caption{$p = 0.1$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/policy-p=0.9.png}
+        \caption{$p = 0.9$}
+    \end{subfigure}
+    \caption{Politiques optimales trouvées par l'algorithme \emph{Value Iteration} avec $\delta = 0.01$}
+\end{figure}
+
+Nous observons que l'agent préfère se donner la mort plutôt que d'atteindre une sortie même s'il se trouve à côté
+de celle-ci. Expliquons cela analytiquement à l'aide d'un exemple concret:
+
+\begin{proof}[Exemple]
+    Considérons un agent en (0, 5). Trois actions s'offrent à lui: rester, ouest, sud. Aller au sud
+    lui donnerait une récompense de 10. Sauf que cette récompense de 10 est fortement dévaluée par $p$
+    lorsque nous considérons sud comme action. Lorsque nous considérons ouest par exemple, la récompense
+    sera une fois de plus dévaluée de $90\%$ mais la récompense étant 0, cela import peu. En revanche,
+    comme la formule indique qu'il faut faire la somme de tous les états $s'$ nous repassons sur l'action
+    sud et la récompense de 10 est cette fois ci dévaluée de $\frac{p}{len(available\_actions)}$. Cet élément
+    pèse donc fort dans la somme lorsque l'on considère l'action ouest expliquant ainsi pourquoi l'agent prend
+    cette action au lieu de l'action sud.
+\end{proof}
+
+Nous en concluons que les récompenses sont tellement dévaluées que l'agent préfère prendre une action allant
+à l'opposé de la sortie et se donner la mort.
 
 \section{Q-learning}
 

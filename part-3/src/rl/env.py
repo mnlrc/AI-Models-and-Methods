@@ -26,6 +26,7 @@ class Labyrinth:
         self._first_render = True
         all_positions = set(product(range(self._world.height), range(self._world.width)))
         self._valid_positions = list(all_positions - set(self._world.wall_pos) - set(self._world.exit_pos))
+        self._unvalid_positions = list(set(self._world.wall_pos) | set(self._world.exit_pos) | set(self._world.void_pos))
 
     @property
     def map_size(self):
@@ -45,6 +46,13 @@ class Labyrinth:
     def valid_states(self) -> list[tuple[int, int]]:
         """The list of valid positions for the agent."""
         return self._valid_positions
+    
+    @property
+    def unvalid_states(self) -> list[tuple[int, int]]:
+        """
+        The list of not valid positions for the agent.
+        For printing purposes."""
+        return self._unvalid_positions
 
     def reset(self):
         """

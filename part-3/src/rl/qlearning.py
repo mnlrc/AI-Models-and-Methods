@@ -161,7 +161,7 @@ class QLearning:
                 + self.alpha * (reward + self.gamma * s_next_value)
             
 
-            print(f"\rIterations: {i + 1} | \
+            print(f"\rIterations: {i + 1} | Environment probability: {self.env._p}\
                   ", end="", flush=True)
                 #   Q-Values:\n {self.q_table} \
         

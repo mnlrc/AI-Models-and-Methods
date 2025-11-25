@@ -17,6 +17,10 @@ class ValueIteration:
         self.gamma = gamma
         # setting up states and state values (all zero when starting)
         self.V = np.zeros(shape=self.env.map_size)
+        self.optimal_policy = np.zeros(shape=self.env.map_size, dtype=str)
+
+        for not_valid_s in self.env.unvalid_states:
+            self.optimal_policy[not_valid_s] = "X"
 
     def train(self, delta: float):
         """
@@ -25,7 +29,7 @@ class ValueIteration:
         Parameters:
         - delta (float): The threshold for convergence.
         """
-
+        action_to_symbol = ["↑", "↓", "→", "←", "·"]
         smallest_variation = np.inf
         iterations = 0
         while True:
@@ -34,6 +38,7 @@ class ValueIteration:
             variation = 0
             V_next = self.V.copy()
             for s in self.env.valid_states:
+                best_action = None
                 try:
                     self.env.set_state(s)
                 except lle.exceptions.InvalidWorldStateError:
@@ -50,9 +55,12 @@ class ValueIteration:
                     for next_s, reward, probability in transitions:
                         new_sum += probability * (reward + self.gamma * self.V[next_s])
                     
-                    best_sum = max(new_sum, best_sum)
+                    if new_sum > best_sum:
+                        best_sum = new_sum
+                        best_action = a
 
                 V_next[s] = best_sum
+                self.optimal_policy[s] = action_to_symbol[best_action.value]
             
             variation = np.max(np.abs(self.V - V_next))
             self.V = V_next
@@ -66,11 +74,12 @@ class ValueIteration:
             if variation < smallest_variation:
                 smallest_variation = variation
             print(
-                f"\rIterations: {iterations} | Δ: {smallest_variation:.4f} (δ: {delta})",
+                f"\rIterations: {iterations} | Δ: {smallest_variation:.4f} (δ: {delta}) | Environment probability: {self.env._p}",
                 end="",
                 flush=True,
             )
 
+        print(f"Optimal policy (with p = {self.env._p}): \n{self.optimal_policy}")
 
 
     def get_value_table(self) -> np.ndarray:
@@ -81,6 +90,15 @@ class ValueIteration:
         - np.ndarray: A 2D array representing the estimated values for each state.
         """
         return self.V
+    
+    def get_optimal_policy(self) -> np.ndarray:
+        """
+        Retrieve the optimal policy table as a 2D numpy array.
+
+        Returns:
+        - np.ndarray: A 2D array representing the optimal policy for each state.
+        """
+        return self.optimal_policy
     
     def get_transitions(self, action) -> list[tuple[tuple[int, int], float, float]]:
         """

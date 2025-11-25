@@ -227,7 +227,7 @@ def plot_scores(scores: dict, title: str) -> None:
     plt.show()
 
 def main():
-    render = False
+    render = True
     # ==================================================== #
     #                        Seed                          #
     # ==================================================== #
