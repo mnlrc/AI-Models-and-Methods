@@ -128,6 +128,7 @@ class QLearning:
         counter = 0
         values = []
         score = 0
+        total_score = 0
         episode_scores = []
         for i in range(n_steps):
             counter += 1
@@ -146,6 +147,7 @@ class QLearning:
 
             reward = self.env.step(chosen_action, current_state)
             score += reward
+            total_score += reward
             s_next = self.env.agent_position
             h_next, w_next = s_next
             h, w = current_state
@@ -165,6 +167,8 @@ class QLearning:
         
         print()
         print(f"Average steps taken by the agent before dying: {sum(values) / len(values)}")
-        print(f"Average score per epidsode: {sum(episode_scores) / len(episode_scores)}")
+        average_episode_score = sum(episode_scores) / len(episode_scores)
+        print(f"Average score per epidsode: {average_episode_score}")
+        print(f"Total score: {total_score}")
         
-        return episode_scores
+        return average_episode_score, total_score

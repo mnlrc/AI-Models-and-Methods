@@ -146,13 +146,13 @@ Plus il y a d'itérations, plus nous nous approchons de la convergence. Voici le
     \centering
     \begin{subfigure}[b]{0.495\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{images/delta=1.png}
+        \includegraphics[width=\linewidth]{graphs/delta=1.png}
         \caption{$\delta$ = 1, $k$ = 10}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.495\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{images/delta=0_001.png}
+        \includegraphics[width=\linewidth]{graphs/delta=0_001.png}
         \caption{$\delta$ = 0.001, $k$ = 20}
     \end{subfigure}
 \end{figure}
@@ -197,6 +197,7 @@ chaque état.
     \begin{equation}
     Q(s,a) \leftarrow (1 - \alpha)\,Q(s,a)
     + \alpha \big[ R(s,a,s') + \gamma\,V(s') \big]
+    \label{eq:q-learning}
     \end{equation}
 \caption*{Mise à jour de la \emph{q-value} en un état $s$ en prenant une action $a$, avec $ V(s) = \max_{a \in A} Q(s,a)$}
 \end{figure}
@@ -234,6 +235,7 @@ sur base d'une politique bien déterminée. Il nous a été demandé d'en implé
             \pi_{a}(s) = 
             \frac{ e^{\frac{Q(s,a)}{\tau}} }
                  { \sum_{a' \in A} e^{\frac{Q(s,a')}{\tau}} }
+        \label{eq:max-Boltzmann}
         \end{equation}
     En termes concrets, pour un état $s$ donné, l'équation va calculer, pour chaque action $a$ disponible, une certaine probabilité.
     Donc chaque action sera pondérée d'une probabilité $p$. Nous choisissons ensuite une action aléatoirement en prenant en compte des
@@ -250,7 +252,8 @@ Les paramètres généraux sont:
     \item l'environnement: probabilité de prendre une action aléatoire au lieu de celle choisie $p$ = 0.1
     \item l'algorithme: \emph{learning rate}\footnote{Taux définissant à quel point une ancienne valeur remplace la nouvelle; un taux plus élevé permet à
     l'agent de s'adapter plus rapidement aux nouvelles valeurs calculées tandis qu'un taux plus bas nous aurons des résultats plus stables
-    mais un apprentissage plus lent.} $\alpha$ = 0.1 et \emph{discount factor} $\gamma$ = 0.9 
+    mais un apprentissage plus lent.} $\alpha$ = 0.1 et \emph{discount factor} $\gamma$ = 0.9
+    \item $random.seed(0)$
 \end{itemize}
 
 \subsubsection{Exploration $\varepsilon$-greedy}
@@ -269,9 +272,32 @@ avons utilisé l'expression $f(x) = f(x_0)e^{-kx}$. Nous avons $f(x)$, $x$ et $x
 
 \subsubsection{Résultats}
 
-Voici le graphique reprenant les résultats des huit expériences menées:
+Voici les graphiques reprenant les résultats des huit expériences menées:
 
-% GRAPH
+\begin{figure}[H]
+    \centering
+    \centering
+    \includegraphics[width=\linewidth]{graphs/Average score per episode (logarithmic scale).jpg}
+    \caption{Score moyen par épisode de l'algorithme \emph{Q-learning} avec différentes valeurs par politique d'exploration.}
+    \hfill
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{graphs/Total score after 20_000 iterations (logarithmic scale).jpg}
+    \caption{Score total pour une exécution de l'algorithme \emph{Q-learning} avec différentes valeurs par politique d'exploration.}
+\end{figure}
+
+Nous considérons ici un épisode comme toutes les actions prises par l'agent tant qu'il ne meurt pas. En effet,
+lorsque l'agent meurt, l'environnement est réinitialisé.
+
+Nous observons que lorsque le score moyen est élevé, le score total est très bas voire négatif.
+Ceci s'explique par l'opposition entre exploitation et exploration. Si l'algorithme ne fait que
+exploiter (en particulier la sortie la plus proche avec une faible récompense), il aura un score
+moyen acceptable mais un score total assez mauvais. À l'opposé, une forte exploration implique de nombreuses
+morts de l'agent expliquant le score moyen faible et un score total élevé\footnote{Ces résultats se reflètent
+également dans le nombre de pas moyen effectués par l'agent avant de mourir. Une forte exploitation implique
+peu de risques et donc beaucoup d'étapes avant de mourir (donnée affichée à l'exécution.)}. 
 
 
 \section{Discussion}
@@ -297,10 +323,102 @@ probabilité pour chaque action avant d'en sélectionner une aléatoirement en p
 
 \subsection{Stratégies d'exploration}
 
+\subsubsection{Analytiquement}
+\label{sec:analytic}
+
+La stratégie $\varepsilon$-greedy balance son exploration et sa maximisation à l'aide du paramètre $\varepsilon$. En effet,
+une action aléatoire est choisie avec une probabilité $\varepsilon$, encourageant l'exploration de l'environnement. À l'opposé,
+il y a une probabilité $1 - \varepsilon$ qu'une action maximisant les \emph{q-values} soit prise, encourageant ainsi l'exploitation.
+
+Concernant \emph{Max-Boltzmann}, le paramètre $\tau$ est celui influençant la prise de décision. Lors-que $\tau \rightarrow \infty$,
+nous observons aisément que, dans l'équation \ref{eq:max-Boltzmann}, nous avons un dividende ayant une valeur tendant vers
+$e^{0} = 1$ et le dénominateur a une valeur tendant vers $\sum_{a} e^{0} = \sum_{a} 1$. Donc, pour chaque action $a \in A$, nous avons
+une même probabilité $\frac{1}{len(A)}$ encourageant l'exploration. À l'inverse, quand $\tau \rightarrow 0$, les probabilités
+associées à chaque action $a$ dépendent plus des \emph{q-values} (au numérateurs des exposants), poussant l'algorithme à
+l'exploitation.
+
+\subsubsection{Expérimentalement}
+
+L'analyse analytique proposée dans la section \ref{sec:analytic} précédente est appuyée par les résultats\footnote{Afin de ne
+pas surcharger ce document d'avantage, nous analysons les résultats sans ajouter les heatmaps. Cependant, nous proposons les
+paramètres d'entrée afin de permettre au lecteur de reproduire les expériences. De plus, toutes les heatmaps sont
+disponibles dans le directory \emph{./graphs}.} obtenus avec les paramètres suivants:
+
+\begin{itemize}
+    \item random.seed = 0
+    \item $\gamma$ = 0.9
+    \item $\alpha$ = 0.1
+    \item nombre d'étapes = 20\_000
+\end{itemize}
+
+$\varepsilon$-greedy explore bien comme prévu plus $\varepsilon$ est faible. Plus $\varepsilon$ augmente, moins
+il explore. Ceci est visible sur la heatmap avec $\varepsilon = 0.9$: les cases à côté de la première sortie (la plus proche)
+sont jaunes (valeur élevée) tandis que la sortie la plus lointaine voit ses cases voisines vierges de valeurs; l'exploration
+n'a pas été suffisament profonde. Finalement, concernant l'expérience avec $\varepsilon$ diminuant linéairement, nous devrions
+avoir une heatmap relativement bien explorée ($\varepsilon$ élevé au début de l'algorithme) avec une exploitation plus
+poussée vers la fin. Cependant, avec 20\_000 itérations, l'algorithme ne trouve pas la sortie la plus éloignée. Nous avons
+alors essayé avec 50\_000 itérations et nous voyons immédiatement que la sortie lointaine est découverte et a une case très
+jaune à proximité. La conclusion est donc la suivante: sur plus d'itérations, l'algorithme a eu plus de temps pour explorer,
+plus d'itérations avec un $\varepsilon$ relativement élevé pour finalement bien exploiter les cases aux \emph{q-values} les plus
+élevées.
+
+La stratégie \emph{Max-Boltzmann}, comme $\varepsilon$-greedy colle à la théorie: plus $\tau \rightarrow 0$, moins il y a
+d'exploration. Cependant, nous observons que avec une valeur de $\tau$ favorisant l'exploration ou l'exploitation,
+des \emph{q-values} sont calculées de manière à peu près équitable partout dans l'environnement (sauf pour les valeurs extrêmes
+comme par exemple $\tau = 0.01$ où les \emph{q-values} ne s'étendent pas jusqu'à la sortie éloignée).
 
 
+\subsubsection{Conclusion}
+
+Ces analyses permettent donc de répondre à la question concernant l'équilibre des politiques d'exploration. La stratégie d'exploration
+\emph{Max-Boltzmann} semble atteindre un meilleur équilibre entre exploration et exploitation. Chaque action possède une probabilité
+propre d'être sélec-tionnée. Donc, même si une action possède une faible probabilité, elle peut se voir être choisie tout de même. En
+d'autres termes, les actions ayant une \emph{q-value} plus élevées sont favorisées mais pas choisies exclusivement. De plus,
+ces calculs de probabilité sont pondérés par le paramètre $\tau$ permettant de diriger, de choisir une approche tendant plus vers
+l'exploitation ou l'exploration (mais jamais un des deux exclusivement).
+
+En effet, à son opposé, la stratégie
+$\varepsilon$-greedy est binaire. Il y a une probabilité $\varepsilon$ de prendre une action aléatoire. Donc, avec $\varepsilon$
+proche de 1, nous avons un algorithme qui explore majoritairement en négligeant l'exploitation (et inversément pour $\varepsilon$
+proche de 0). On ne retrouve donc pas la même stabilité que chez \emph{Max-Boltzmann}.
+
+\subsection{Effet du discount factor $\gamma$}
+
+Nous pouvons exprimer le \emph{discount factor} comme un facteur qui diminue l'importance des valeurs des états futurs $s'$
+atteints à partir de $s$ en effectuant l'action $a$.
+
+Dans le cas de notre programme, comme nous l'avons déjà expliqué, les valeurs d'état se "propagent" à partir des transitions d'un
+état $s$ à un état $s'$ avec une action $a$ qui octroient une récompense. Diminuer $\gamma$ aura pour effet
+de réduire ce phénomène de propagation et diminue donc les valeurs des états en général. De ce fait, les cases
+des heatmaps (pour \emph{Value Iteration} et \emph{Q-learning}) auront de plus petites valeurs et donc des cases avec des couleurs
+plus faibles. Pour des valeurs de $\gamma$ particulièrement faibles (ex: $\gamma = 0.1$) nous observons que seules les
+sorties sont claires, en particulier celles avec une récompense plus élevée si celle-ci est atteinte (exploration suffisante requise).
+
+\subsection{Effet du taux d'apprentissage $\alpha$}
+
+Le taux d'apprentissage balance les valeurs \emph{q-values} précédemment calculées et les nouvelles (valeur d'état $s'$ et la récompense obtenue
+en arrivant à cet état $s'$). Nous observons à l'équation \ref{eq:q-learning} que, plus $\alpha$ est élevé, plus 
+les nouvelles valeurs auront un poids important dans le calcul du nouveau poids et moins 
+l'ancienne valeur d'état aura de poids (et inversément pour $\alpha$ faible).
+
+En particulier, nous observons que, en comparant un $\alpha = 0.9$ et $\alpha = 0.1$ sur la stratégie $\varepsilon$-greedy 
+avec $\varepsilon = 0.1$ (exploration très faible), les \emph{q-values} sont mieux réparties. En effet, avec $\alpha = 0.1$,
+uniquement les cases proches des sorties sont colorées et possèdent donc une valeur non-nulle ou élevée.
+
+Nous en tirons que, plus $\alpha$ est élevé, plus les \emph{q-values} précédemment calculées sont écrasées. Ceci
+est justifié par notre exemple ci-dessus. Avec $\varepsilon = 0$, $\varepsilon$-greedy n'explore que peu et exploite
+surtout. Avec $\alpha = 0.1$ le chemin menant aux sorties possède des \emph{q-values} quasi nulles car, l'algorithme
+prend toujours la même action et ne calcule que rarement les \emph{q-values} éloignées des sorties. Avec une
+propagation plus importante, le chemin est donc plus éclairé car, même pour un passage unique par un chemin, même pour une seule 
+exploration, les valeurs précédentes ne sont pratiquement pas prises en compte; uniquement la récompense compte. 
 
 \section{Conclusion}
+
+Ce troisième projet d'Intelligence Artificielle nous a permis une fois de plus d'appliquer un concept vu en cours,
+l'analyser et conclure. Nous avons pu peser les avantages et inconvénients de chaque algorithme d'apprentissage
+par renforcement implémenté, à savoir le \emph{Value Iteration} et le \emph{Q-learning}. L'analyse
+des heatmaps générées nous a permis de visualiser les algorithmes de façon claire permettant ainsi une compréhension
+accrue de ce qui nous a été demandé.
 
 
 \end{document}
