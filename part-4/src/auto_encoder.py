@@ -1,6 +1,8 @@
 from typing import List
 import numpy as np
 from tqdm import tqdm
+from utils import activation
+from utils import derivative
 
 
 class AutoEncoder:
@@ -22,46 +24,89 @@ class AutoEncoder:
         self.W3 = (np.random.random((encoded_dim, input_dim // 2)) - 0.5) * 0.001
         self.W4 = (np.random.random((input_dim // 2, input_dim)) - 0.5) * 0.001
 
-    def loss(self, x: np.ndarray, y: np.ndarray) -> float: ...
+    def loss(self, x: np.ndarray, y: np.ndarray) -> float:
+        """
+        Calculates the Mean Squared Error.
+        """
+        fact = 1 / len(x)
+        return fact * np.sum((x - y) ** 2)
 
     def encode(self, x: np.ndarray) -> np.ndarray:
         """
         Encodes an input vector x.
         """
-        ...
+        act1 = x @ self.W1 # matricial product
+        x1 = activation(x=act1)
+
+        act2 = x1 @ self.W2 # matricial product
+        xhat = activation(x=act2)
+        
+        # for type checking
+        if isinstance(xhat, np.ndarray):
+            return xhat
+        return np.ndarray(0)
 
     def decode(self, x: np.ndarray) -> np.ndarray:
         """
         Decodes an encoded vector x.
         """
-        ...
+        act1 = x @ self.W3 # matricial product
+        x2 = activation(x=act1)
+
+        act2 = x2 @ self.W4 # matricial product
+        y = activation(x=act2)
+
+        # for type checking
+        if isinstance(y, np.ndarray):
+            return y
+        return np.ndarray(0)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
         Performs the forward pass.
         """
-        ...
+        xhat = self.encode(x=x)
+        y = self.decode(x=xhat)
+        return y
+
 
     def backward(self, x: np.ndarray) -> None:
         """
         Updates the weights of the network using the backpropagation.
         """
-        e4 = ...
-        d4 = ...
+        x1 = activation(x=x @ self.W1)
+        xhat = activation(x=x1 @ self.W2)
+        x2 = activation(x=xhat @ self.W3)
+        y = activation(x=x2 @ self.W4)
 
-        e3 = ...
-        d3 = ...
+        # Step 1: Calculate output's gradient error
+        e4 = np.multiply(2, np.subtract(y, x))
+        d4 = np.multiply(e4, derivative(x=y))
 
-        e2 = ...
-        d2 = ...
+        # Step 2: Propagation of errors to layers underneath
+        e3 = d4 @ np.transpose(self.W4)
+        d3 = np.multiply(e3, derivative(x=x2))
 
-        e1 = ...
-        d1 = ...
+        e2 = d3 @ np.transpose(self.W3)
+        d2 = np.multiply(e2, derivative(x=xhat))
 
-        self.W4 -= 0
-        self.W3 -= 0
-        self.W2 -= 0
-        self.W1 -= 0
+        e1 = d2 @ np.transpose(self.W2)
+        d1 = np.multiply(e1, derivative(x=x1))
+
+        # Step 3: Updating weights
+        self.W4 -= np.subtract(self.W4, 
+                               np.multiply(self.mu, 
+                                           np.transpose(x2) @ d4))
+        self.W3 -= np.subtract(self.W3, 
+                               np.multiply(self.mu, 
+                                           np.transpose(xhat) @ d3))
+        self.W2 -= np.subtract(self.W2, 
+                               np.multiply(self.mu, 
+                                           np.transpose(x1) @ d2))
+        self.W1 -= np.subtract(self.W1, 
+                               np.multiply(self.mu, 
+                                           np.transpose(x) @ d1))
+        
 
     def train(self, x_train: np.ndarray, epochs: int = 10, batch_size: int = 16) -> List[float]:
         """
@@ -75,7 +120,7 @@ class AutoEncoder:
         """
         losses = []
         for epoch in range(epochs):
-            for i in tqdm(range(0, x_train.shape[0], batch_size)):
+            for i in tqdm(range(0, x_train.shape[0], batch_size), desc="hehe"):
                 self.forward(x_train[i : i + batch_size])
                 self.backward(x_train[i : i + batch_size])
             output = self.forward(x_train)
