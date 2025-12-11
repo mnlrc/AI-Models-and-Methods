@@ -10,9 +10,9 @@ LEARNING_RATE = 0.003
 def main(args: list[str]):
     if len(args) == 1:
         file_path = args[0]
-        x_data, y_data = get_dataset(filepath=file_path)
+        data, labels = get_dataset(filepath=file_path)
         auto_encoder = AutoEncoder(input_dim=INPUT_DIMENSION, encoded_dim=ENCODED_DIMENSION, learning_rate=LEARNING_RATE)
-        auto_encoder.train(x_train=x_data)
+        auto_encoder.train(x_train=data)
 
     else:
         raise Exception("Too many arguments given")

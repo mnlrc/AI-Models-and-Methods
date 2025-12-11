@@ -20,16 +20,17 @@ def get_dataset(filepath: str):
     """
     print("Reading dataset...")
     d = np.loadtxt(filepath, delimiter=",", dtype=str)[1:].astype(np.int64)
+    # x contains the data and y contains the labels
     x, y = d[:, 1:], d[:, 0].T
-    print("Dataset read, returning data...")
-    return x /  255.0, y
+    print("Dataset read, returning data.")
+    return x / 255.0, y
 
 
 def activation(x: int | float | np.ndarray) -> int | float | np.ndarray:
     """
     The sigmoid activation function.
     """
-    return np.divide(1, (1 + np.exp(-x))) # 1 / 1+ e^-x
+    return np.divide(1, (1 + np.exp(np.negative(x)))) # 1 / 1+ e^-x
 
 
 def derivative(x: int | float | np.ndarray) -> int | float | np.ndarray:
