@@ -101,23 +101,32 @@ class AutoEncoder:
                                np.matmul(np.transpose(x), d1))
         
 
-    def train(self, x_train: np.ndarray, epochs: int = 10, batch_size: int = 16) -> List[float]:
+    def train(self, x_train: np.ndarray, x_test: np.ndarray, epochs: int = 10, batch_size: int = 16) -> tuple[List[float], np.ndarray, List[float]]:
         """
-        Trains the auto-encoder on the given dataset.
+        Trains the auto-encoder on the given dataset and testing the auto-encoder on the test dataset for each epoch
+        while recording the training and testing losses.
         Parameters:
             - x_train (np.ndarray): the dataset containing the input vectors.
+            - x_test (np.ndarray): the dataset containing the testing input vectors.
             - epochs (int): the number of epochs to train the auto-encoder with.
             - batch_size (int): the size of each training batch.
         Returns:
-            - losses (List[int]): the training loss of each epoch.
+            - train_losses (list[float]): the list of training losses recorded at each epoch.
+            - test_output (np.ndarray): the reconstructed test output after the final epoch; after the training is complete.
+            - test_losses (list[float]): the list of testing losses recorded at each epoch.
         """
-        losses = []
+        train_losses = []
+        test_losses = []
         for epoch in range(epochs):
             for i in tqdm(range(0, x_train.shape[0], batch_size)):
                 self.forward(x_train[i : i + batch_size])
                 self.backward(x_train[i : i + batch_size])
-            output = self.forward(x_train)
-            loss = self.loss(output, x_train)
-            losses.append(loss)
-            print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss:.7f}")
-        return losses
+            train_output = self.forward(x_train)
+            train_loss = self.loss(train_output, x_train)
+            train_losses.append(train_loss)
+
+            test_output = self.forward(x_test)
+            test_loss = self.loss(test_output, x_test)
+            test_losses.append(test_loss)
+            print(f"Epoch {epoch + 1}/{epochs}, Training loss: {train_loss:.7f}, Testing loss: {test_loss:.7f}")
+        return train_losses, test_output, test_losses
