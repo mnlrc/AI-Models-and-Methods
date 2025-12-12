@@ -35,10 +35,10 @@ class AutoEncoder:
         Encodes an input vector x.
         """
         # using matricial product
-        x1 = activation(x=x @ self.W1)
+        x1 = activation(x=np.matmul(x, self.W1))
 
         # using matricial product
-        xhat = activation(x=x1 @ self.W2)
+        xhat = activation(x=np.matmul(x1, self.W2))
 
         return x1, xhat
 
@@ -47,10 +47,10 @@ class AutoEncoder:
         Decodes an encoded vector x.
         """
         # using matricial product
-        x2 = activation(x=x @ self.W3)
+        x2 = activation(x=np.matmul(x,self.W3))
 
         # using matricial product
-        y = activation(x=x2 @ self.W4)
+        y = activation(x=np.matmul(x2, self.W4))
 
         return x2, y
 
@@ -75,23 +75,30 @@ class AutoEncoder:
         d4 = np.multiply(e4, derivative(x=y))
 
         # Step 2: Propagation of errors to layers underneath
-        e3 = d4 @ np.transpose(self.W4)
+        e3 = np.matmul(d4, 
+                       np.transpose(self.W4))
         d3 = np.multiply(e3, derivative(x=x2))
 
-        e2 = d3 @ np.transpose(self.W3)
+        e2 = np.matmul(d3, 
+                       np.transpose(self.W3))
         d2 = np.multiply(e2, derivative(x=xhat))
 
-        e1 = d2 @ np.transpose(self.W2)
+        e1 = np.matmul(d2, 
+                       np.transpose(self.W2))
         d1 = np.multiply(e1, derivative(x=x1))
 
         # Step 3: Updating weights
-        self.W4 -= np.multiply(self.mu, np.transpose(x2) @ d4)
+        self.W4 -= np.multiply(self.mu, 
+                               np.matmul(np.transpose(x2), d4))
 
-        self.W3 -= np.multiply(self.mu, np.transpose(xhat) @ d3)
+        self.W3 -= np.multiply(self.mu, 
+                               np.matmul(np.transpose(xhat), d3))
 
-        self.W2 -= np.multiply(self.mu, np.transpose(x1) @ d2)
+        self.W2 -= np.multiply(self.mu, 
+                               np.matmul(np.transpose(x1), d2))
         
-        self.W1 -= np.multiply(self.mu, np.transpose(x) @ d1)
+        self.W1 -= np.multiply(self.mu, 
+                               np.matmul(np.transpose(x), d1))
         
 
     def train(self, x_train: np.ndarray, epochs: int = 10, batch_size: int = 16) -> List[float]:
