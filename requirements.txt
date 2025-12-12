@@ -1,0 +1,7 @@
+laser-learning-environment
+matplotlib
+pandas
+plotly
+seaborn
+PySide6
+tqdm
