@@ -1,0 +1,127 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{eso-pic,graphicx}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm, footnotesep=3cm]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[pages=some]{background}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+
+
+% -----------------------------------------------------
+
+\begin{document}
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=\paperheight]{../../general-images/background.png}}
+\clearpage
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{flushleft} \large
+    \includegraphics[height=2.0cm]{../../general-images/logo_ulb.jpg}
+    \vspace{5cm}
+   \end{flushleft}
+  \begin{center}
+
+    %Title
+        \textsc{\huge INFO-F311 - Projet d'IA 3}\\[1cm]
+
+    \HRule \\[0.7cm]
+
+        \textsc {\Huge Apprentissage par renforcement}\\[0.4cm]
+
+    \HRule \\[1.2cm]
+
+% Author and supervisor
+\begin{figure}[h]
+\addtocounter{figure}{-1}
+\begin{subfigure}{0.5\textwidth}
+\begin{flushleft} \large
+\emph{Auteur:}\\
+Manuel \textsc{Rocca} - 000596086\\
+
+
+\end{flushleft}
+\end{subfigure}
+\end{figure}
+\vspace{1cm}
+
+\begin{figure}[h]
+\addtocounter{figure}{-1}
+\begin{subfigure}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Professeurs:} \\
+Tom  \textsc{Lenaerts}\\
+\emph{Assistants:} \\
+Axel \textsc{Abels} \\
+Martin \textsc{Colot} \\
+Yannick \textsc{Molinghen} \\
+Pascal \textsc{Tribel}
+\end{flushright}
+\end{subfigure}
+\end{figure}
+
+
+    \vfill
+
+    %Bottom of the page
+    {\large Année académique 2025-2026}
+  \end{center}
+
+  \end{sffamily}
+\end{titlepage}
+
+
+\clearpage
+
+
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------
+
+\section{Introduction}
+
+Ce quatrième et dernier projet dans le cadre du cours INFO-F311 d'Intelligence Artificielle nous amène à étudier et implémenter en pratique un réseau de neuron, en particulier un \emph{auto-encoder}. Nous présentons ci-dessous notre démarche scientifique.
+
+\section{Cadre expérimental}
+
+Comme exprimé dans l'introduction, nous nous penchons ici sur un \emph{auto-encoder}. Un réseau neuronal tel que celui-ci est composé de deux partie: une qui encode et une qui décode. En particulier, il apprend, sur base d'un ensemble de données d'entraînement, à réduire la dimension, encoder la donnée en entrée et à la décoder.
+
+Le jeu de données est un ensemble de chiffres de format $28$x$28$ pixels appartenant à la base de donnée \href{https://en.wikipedia.org/wiki/MNIST_database}{MNIST}. Il est composé de deux fichiers:
+
+\begin{itemize}
+    \item Un fichier d'entraînement de 60\_000 éléments.
+    \item Un fichier de test de 10\_000 éléments.
+\end{itemize}
+
+La valeur de chaque pixel varie entre 0 et 255 mais sont normalisées à une valeur entre 0 et 1 dans notre programme pour améliorer l'efficacité et la précision du modèle (notamment en empêchant les valeurs comme 255 de dominer une petite valeur comme 2 lors d'une multiplication).
+
+Le réseau neuronal a besoin de plusieurs paramètres en entrée:
+
+\begin{itemize}
+    \item La dimension des données d'entrée, 784 dans notre cas (matrices 28x28 linéarisées).
+    \item La dimension des données encodées $\hat{x}$, paramètre variable étudié dans les sections suivantes.
+    \item Le \emph{learning rate}, paramètre déjà étudié dans les autres projets, en particulier le 3e. Il nous semble pertinent de faire l'analogie avec les pas d'itération dans les simulations numériques.
+\end{itemize}
+
+Finalement, pour lancer l'entraînement de cet \emph{auto-encoder}, il nous faut:
+
+\begin{itemize}
+    \item Les données d'entraînement obtenues dans le csv.
+    \item L'\emph{epoch} correspondant au nombre de passages complets de toutes les données dans le réseau.
+    \item Le \emph{batch size} correspondant au nombre de paramètres/d'échantillons traités avant une mise à jour des valeurs du réseau.
+\end{itemize}
+
+\section{Résultats}
+
+\section{Analyse}
+
+\section{Conclusion}
+
+
+\end{document}
