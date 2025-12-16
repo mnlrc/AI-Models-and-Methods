@@ -10,8 +10,8 @@ import os
 INPUT_DIMENSION = 784
 ENCODED_DIMENSION = 32
 LEARNING_RATE = 0.03
-EPOCHS = 50
-RENDER = False
+EPOCHS = 10
+RENDER = True
 
 
 def plot_losses_over_parameter(train_losses: list[float], test_losses: list[float], parameter_value: any, parameter_name: str) -> None:
@@ -33,7 +33,7 @@ def plot_losses_over_parameter(train_losses: list[float], test_losses: list[floa
     plt.plot(range(epochs), train_losses, label="Training Loss")
     plt.plot(range(epochs), test_losses, label="Testing Loss")
     plt.legend()
-    plt.xlabel(f"{parameter_name}")
+    plt.xlabel("Epochs")
     plt.ylabel("MSE Loss")
     plt.title(f"Mean Squared Error over {parameter_name} = {parameter_value}")
     plt.grid(visible=True)
@@ -165,44 +165,54 @@ def main(args: list[str]):
             training_data_file_path = os.path.join(data_directory, "mnist_train.csv")
             test_data_file_path = os.path.join(data_directory, "mnist_test.csv")
 
+            data_loading_start = time()
             # retrieve datasets
             print(f"Loading training dataset from {training_data_file_path}...")
             training_data, train_labels = get_dataset(filepath=training_data_file_path)
 
             print(f"Loading testing dataset from {test_data_file_path}...")
             test_data, test_labels = get_dataset(filepath=test_data_file_path)
+            data_loading_total = time() - data_loading_start
+            print(f"Total time for loading the files = {data_loading_total}s")
 
 
+            data_analysis_start = time()
             # analyze impacts of different parameters
             encoded_dimensions = [4, 16, 32, 64, 128, 256, 512]
             for dim in encoded_dimensions:
                 print(f"\nAnalyzing impact of encoded dimension size = {dim}...")
+                print(f"Parameters: Learning rate = {LEARNING_RATE} | Epochs = {EPOCHS}")
                 analyze_encoded_dimension_size_impact(training_data=training_data, 
                                                      test_data=test_data,
                                                      labels=test_labels, 
                                                      encoded_dimension=dim)
                 
-            learning_rates = [0.001, 0.01, 0.03, 0.1, 0.3, 0.5]
+            learning_rates = [0.001, 0.01, 0.03, 0.1, 0.3]
             for rate in learning_rates:
                 print(f"\nAnalyzing impact of learning rate = {rate}...")
+                print(f"Parameters: Encoded dimension = {ENCODED_DIMENSION} | Epochs = {EPOCHS}")
                 analyze_learning_rate_impact(training_data=training_data, 
                                              test_data=test_data,
                                              labels=test_labels,
                                              learning_rate=rate)
                 
-            epoch_numbers = [10, 25, 50, 75, 100, 200]
+            epoch_numbers = [2, 5, 10, 20]
             for num in epoch_numbers:
                 print(f"\nAnalyzing impact of number of epochs = {num}...")
+                print(f"Parameters: Learning rate = {LEARNING_RATE} | Encoded dimension = {ENCODED_DIMENSION}")
                 analyze_epochs_number_impact(training_data=training_data, 
                                              test_data=test_data,
                                              labels=test_labels,
                                              epochs=num)
+            
+            data_analysis_total = time() - data_analysis_start
+            print(f"Total time spend analysing and training neural network = {data_analysis_total}s")
         
         else:
             raise TypeError("The provided path is not a directory")
 
     else:
-        raise Exception("Too many arguments given")
+        raise Exception("Wrong arguments given")
     
 
 if __name__ == "__main__":

@@ -121,6 +121,7 @@ class AutoEncoder:
             for i in tqdm(range(0, x_train.shape[0], batch_size)):
                 self.forward(x_train[i : i + batch_size])
                 self.backward(x_train[i : i + batch_size])
+                
             train_output = self.forward(x_train)
             train_loss = self.loss(train_output, x_train)
             train_losses.append(train_loss)
