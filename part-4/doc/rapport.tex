@@ -28,11 +28,11 @@
   \begin{center}
 
     %Title
-        \textsc{\huge INFO-F311 - Projet d'IA 3}\\[1cm]
+        \textsc{\huge INFO-F311 - Projet d'IA 4}\\[1cm]
 
     \HRule \\[0.7cm]
 
-        \textsc {\Huge Apprentissage par renforcement}\\[0.4cm]
+        \textsc {\Huge Réseaux de neurones}\\[0.4cm]
 
     \HRule \\[1.2cm]
 
@@ -86,7 +86,7 @@ Pascal \textsc{Tribel}
 
 \section{Introduction}
 
-Ce quatrième et dernier projet dans le cadre du cours INFO-F311 d'Intelligence Artificielle nous amène à étudier et implémenter en pratique un réseau de neuron, en particulier un \emph{auto-encoder}. Nous présentons ci-dessous notre démarche scientifique.
+Ce quatrième et dernier projet du cours INFO-F311 d'Intelligence Artificielle nous amène à étudier et implémenter en pratique un réseau de neurones, en particulier un \emph{auto-encoder}. Nous présentons ci-dessous notre démarche scientifique.
 
 \section{Cadre expérimental}
 
@@ -112,16 +112,224 @@ Le réseau neuronal a besoin de plusieurs paramètres en entrée:
 Finalement, pour lancer l'entraînement de cet \emph{auto-encoder}, il nous faut:
 
 \begin{itemize}
-    \item Les données d'entraînement obtenues dans le csv.
+    \item Les données d'entraînement contenues dans le fichier \emph{mnist\_train.csv}.
     \item L'\emph{epoch} correspondant au nombre de passages complets de toutes les données dans le réseau.
     \item Le \emph{batch size} correspondant au nombre de paramètres/d'échantillons traités avant une mise à jour des valeurs du réseau.
 \end{itemize}
 
 \section{Résultats}
 
+Une fois les notions posées dans les sections précédentes, il est maintenant temps pour nous de présenter et d'expliquer nos résultats expérimentaux. Différents paramètres pertinents sont analysés afin d'atteindre, de converger vers une compréhension plus exhaustive de ce qu'est une \emph{auto-encoder}.
+
+\subsection[Impact de la taille du vecteur compressé]{Impact de la taille du vecteur compressé $\hat{x}$}
+
+Le vecteur compressé est l'étape intermédiaire de l'\emph{auto-encoder}. En effet, comme dit plus haut, il est divisé en deux parties: l'encodage et le décodage. La taille de ce vecteur est un paramètre crucial à régler de manière optimale pour obtenir une reconstruction de l'image initiale d'une qualité optimale.
+
+Un vecteur compressé de petite dimension force le réseau de neurone à se focaliser sur les aspects importants de la figure. À l'opposé, un vecteur trop grand permettrait une reconstruction 100$\%$ fidèle à la réalité. Mais ce n'est pas le cas! 
+
+En effet, nos expériences prouvent le contraire. Avec un \emph{learning rate} $\mu = 0.03$ et un nombre d'\emph{epochs} $e$ = 10, nous obtenons les résultats suivants:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Encoded Dimension Vector Size=4.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry2_reconstructed_digit_7_Encoded Dimension Vector Size=4.jpg}
+        \caption{Image d'un $7$ reconstruit}
+    \end{subfigure}
+    \caption{Taille du vecteur encodé $|\hat{x}|$ = 4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Encoded Dimension Vector Size=32.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry2_reconstructed_digit_7_Encoded Dimension Vector Size=32.jpg}
+        \caption{Image d'un $7$ reconstruit}
+    \end{subfigure}
+    \caption{Taille du vecteur encodé $|\hat{x}|$ = 32}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Encoded Dimension Vector Size=128.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry2_reconstructed_digit_7_Encoded Dimension Vector Size=128.jpg}
+        \caption{Image d'un $7$ reconstruit}
+    \end{subfigure}
+    \caption{Taille du vecteur encodé $|\hat{x}|$ = 128}
+\end{figure}
+
+Nous observons que pour une dimension d'encodage trop petite, la \emph{Minimum Squared Error} atteint une valeur minimale vers environ $0.0685$ après 10 epochs. En augmentant la taille du vecteur, cette erreur diminue pour atteindre un minimum d'environ $0.0130$ permettant une reconstruction de l'image nettement meilleure. Finalement avec une dimension de 128 (et au-dessus), l'erreur ne diminue pas en dessous de $0.1$, environ dix fois plus élevée qu'avec une dimension plus petite. Ceci s'explique par le phénomène d'\emph{overfitting}. En clair, cela signifie que le modèle apprend tellement bien les données d'entraînement que les performances diminuent sur des données de test jamais vues \footnote{Source: https://developers.google.com/machine-learning/crash-course/overfitting/overfitting}. 
+
+
+
+\subsection[Impact de la valeur du learning rate]{Impact de la valeur du learning rate $\mu$}
+
+L'impact du learning rate $\mu$ est le même (ou du moins très similaire) à son rôle dans l'appren-tissage par renforcement. En effet, ce paramètre 
+détermine la valeur du "saut" à chaque étape; à quel point les nouvelles valeurs écrasent les précédentes. Une analogie intéressante est celle de la balle lachée dans un bocal. Plus elle est rapide, plus elle se rapprochera du centre (qui serait alors le point de convergence) rapidement et continuerait son chemin pour remonter. La balle oscille ainsi jusqu'à arriver à un état de repos. La balle peut même sortir du bocal si elle est lancée à une vitesse trop importante (divergence). À l'opposé, une balle avec une vitesse initiale plus faible prend plus de temps à atteindre ce centre (converger) mais une fois au centre, elle s'y arrêtre et ne le dépasse pas.
+
+Pour concrétiser ces propos, voici les résultats de nos expériences avec une dimension de vecteur econdé $\hat{x} = 32$ et un nombre d'\emph{epochs} $e$ = 10:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Learning Rate=0.001.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry3_reconstructed_digit_2_Learning Rate=0.001.jpg}
+        \caption{Image d'un $2$ reconstruit}
+    \end{subfigure}
+    \caption{Learning rate $\mu = 0.001$}
+\end{figure}
+
+Nous observons que les courbes descendent mais qu'il n'y a pas eu convergence. Avec plus d'\emph{epochs}, la valeur de l'erreur devrait atteindre une valeur satisfaisante permettant une reconstruction optimale.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Learning Rate=0.03.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry3_reconstructed_digit_2_Learning Rate=0.03.jpg}
+        \caption{Image d'un $2$ reconstruit}
+    \end{subfigure}
+    \caption{Learning rate $\mu = 0.03$}
+\end{figure}
+
+Le learning rate permet ici d'atteindre une valeur d'erreur suffisament faible en 10 \emph{epochs} pour une reconstruction optimale.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Learning Rate=0.3.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry3_reconstructed_digit_2_Learning Rate=0.3.jpg}
+        \caption{Image d'un $2$ reconstruit}
+    \end{subfigure}
+    \caption{Learning rate $\mu = 0.3$}
+\end{figure}
+
+Avec une learning rate trop élevé, nous observons une divergence. En effet, les courbes ne descendent pas du tout.
+
+
+\subsection[Impact du nombre d'epoch]{Impact du nombre d'epoch $e$}
+
+Finalement, ce dernier paramètre, le nombre d'\emph{epochs} reflète grossièrement le nombre d'it-érations. En effet, une \emph{epoch} désigne un passage complet à travers l'ensemble des données d'entraînement, permettant au modèle d'apprendre et de mettre à jour ses paramètres en fonction des données.
+
+Voici donc nos résultats avec un learning rate $\mu = 0.03$ et une une dimension de vecteur econdé $\hat{x} = 32$:
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Epochs=2.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry6_reconstructed_digit_4_Epochs=2.jpg}
+        \caption{Image d'un $4$ reconstruit}
+    \end{subfigure}
+    \caption{Nombre d'\emph{epochs} $e = 2$}
+\end{figure}
+
+Après deux \emph{epochs}, la valeur de l'erreur est déjà relativement faible. Ceci nous permet donc de déjà distinguer le chiffre sur l'image reconstituée.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Epochs=5.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry6_reconstructed_digit_4_Epochs=5.jpg}
+        \caption{Image d'un $4$ reconstruit}
+    \end{subfigure}
+    \caption{Nombre d'\emph{epochs} $e = 5$}
+\end{figure}
+
+Nous observons sur le graphe que la valeur de l'erreur commence doucement à se stabiliser. L'image est clairement reconstruite.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graphs/auto_encoder_losses_Epochs=10.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{reconstructed_images/entry6_reconstructed_digit_4_Epochs=10.jpg}
+        \caption{Image d'un $4$ reconstruit}
+    \end{subfigure}
+    \caption{Nombre d'\emph{epochs} $e = 10$}
+\end{figure}
+
+La valeur de l'erreur a atteint un minimum, le gradient est quasiment nul. L'image est claire, il nous semble peu utile d'entrainer le réseau sur plus d'\emph{epochs}. De plus, nous observons qu'après 5 \emph{epochs} seulement, le résultat était déjà plus que correct. Cela peut se révéler intéressant dans le cas où nous travaillons avec un modèle très large où une \emph{epoch} requiert une durée importante pour prendre fin.
+
+
 \section{Analyse}
 
+Dans cette section, nous considérons des aspects différents de l'\emph{auto-encoder}; différents de l'optimisation des paramètres.
+
+\subsection{Hallucination de l'auto-encoder}
+
+Par contrainte de temps, nous n'avons pu expérimenter à ce sujet. L'hallucination d'un réseau neuronal est quelque chose de commun. Il est simple de s'imaginer ce qu'il se passerait.
+
+Passer un vecteur encodé aléatoire à l'\emph{auto-encoder} nous donnerait un résultat ressemblant à un chiffre même si l'image de base n'a rien à voir avec. Cela est dû à l'entraînement subi par le réseau. Il ne détecte pas que l'entrée est aberrante, il projette simplement ce vecteur dans l'espace des images plausibles apprises durant l'entraînement.
+
+\subsection{Optimisations possibles}
+
+Il est clair que notre réseau de neurones est relativement petit et peu complexe par rapport à ce qui se fait de nos jours. Le but étant ici de comprendre et d'apprendre, cela nous semble tout naturel. Cependant, il ne faut jamais négliger la réalité. Autrement dit, prenons tout de même en considération des modèles plus larges qui prennent plus de temps à s'entraînter. Dans ce cas ci, il est intéressant de considérer des optimisations pour améliorer les performances. Nous en abordons deux dans les sous-sections qui suivent.
+
+\subsubsection{Augmenter la profondeur}
+
+Utiliser un \emph{auto-encoder} avec plusieurs couches, en augmentant sa profondeur offre plusieurs avantages \footnote{Source: https://en.wikipedia.org/wiki/Autoencoder\#Advantages\_of\_depth}:
+
+\begin{enumerate}
+    \item Peut réduire exponentiellement le coût de calcul pour représenter certaines fonctions
+    \item Peut réduire exponentiellement la quantité de données d'entraînement nécessaires pour apprendre certaines fonctions
+    \item Expérimentalement, les auto-encodeurs profonds offrent une meilleure compression que les auto-encodeurs peu profonds ou linéaires.
+\end{enumerate}
+
+Naturellement, augmenter sa profondeur demande un espace en mémoire plus important. Le plus important est toujours de trouver le bon compromis.
+
+
+\subsubsection{Learning rate dynamique}
+
+Comme nous avons pu l'observer dans nos résultats, un learning rate trop lent permet en théorie d'obtenir de bons résultats, une bonne convergence mais nécessite beaucoup d'\emph{epochs}. À l'opposé, un learning rate trop élevé peut diverger. L'idée est d'allier le meilleur des deux mondes. En d'autres termes, implémenter une learning rate qui, au début de l'entraînement est relativement élevé (sans tomber dans les excès bien sûr) permettant un début d'apprentissage plus rapide et peu stable. Au fur et à mesure de cet entraînement, diminuer le learning rate afin de stabiliser l'apprentissage et à terme, se rapprocher au mieux de la convergence.
+
+
 \section{Conclusion}
+
+Ce dernier projet d'Intelligence Artificielle conclut donc nos travaux sur le sujet. Lors de cette itération, nous avons abordé un sujet très à la mode à notre époque actuelle: les réseaux neuronaux et en particulier l'\emph{auto-encoder}. Nous avons commencé par implémenter le programme en \emph{Python} avant de pouvoir en extraire des données pertinentes et en produire des graphiques sur base desquels nous avons pu proposer une analyse espérons pertinente. Pour conclure ce thème, nous avons fini par aborder et analyser des aspects comme l'hallucination ainsi que certaines pistes d'optimisation.
 
 
 \end{document}
