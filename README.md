@@ -9,7 +9,7 @@ Each part implements a different theme in the AI field:
 - Decision making with uncertainty (Reinforcement Learning)
 - Machine learning (Neural Networks)
 
-The details about each subject can be found in the README file of each subdirectory.
+The details about each subject can be found in the README file of each subdirectory (and the scientific reports).
 
 ## Repository structure
 
@@ -44,3 +44,16 @@ The details about each subject can be found in the README file of each subdirect
 ```
 
 Each part contains a ```src``` directory that contains the code implementing the AI method. The ```doc``` directories contain the directives for each part given by the staff of the course. They also contain a detailed analysis of the results in form of a scientific report (in french).
+
+## Running the projects
+
+Each part has different requirements. In order to run them, you must initialize a python virtual environment by typing:
+```python3 -m venv .venv``` (considering you already have Python3 installed)
+
+Then you activate it:
+```source .venv/bin/activate```
+
+Finally, install the requirements:
+```pip install -r requirements.txt```
+
+If you are wondering why I didn't make a ```requirements.txt``` for each project, let me be honest. It was pure laziness.
