@@ -3,7 +3,8 @@ from itertools import product
 
 from lle import Action, EventType, World, WorldState
 
-BOTTOM_LEFT_EXIT = (6, 0)
+# BOTTOM_LEFT_EXIT = (6, 0)
+BOTTOM_RIGHT = (2, 4)
 
 
 class Labyrinth:
@@ -13,15 +14,20 @@ class Labyrinth:
         - p: Probability of taking a random action instead of the chosen one.
         """
         self._p = p
-        self._world = World("""
-                .  .  .  X  @  .  S0
-                .  @  .  .  .  .  @
-                .  @  .  .  .  @  .
-                .  .  @  .  V  .  .
-                @  .  @  .  V  @  .
-                .  .  .  .  .  .  .
-                X  @  .  V  @  .  .""")
+        # self._world = World("""
+                # .  .  .  X  @  .  S0
+                # .  @  .  .  .  .  @
+                # .  @  .  .  .  @  .
+                # .  .  @  .  V  .  .
+                # @  .  @  .  V  @  .
+                # .  .  .  .  .  .  .
+                # X  @  .  V  @  .  .""")
 
+        self._world = World("""
+            S0  .  .  .  X
+            .  @  .  .  @
+            .  .  .  .  X          
+                            """)
         self._done = False
         self._first_render = True
         all_positions = set(product(range(self._world.height), range(self._world.width)))
@@ -94,8 +100,8 @@ class Labyrinth:
                 return -1.0
             if event.event_type == EventType.AGENT_EXIT:
                 self._done = True
-                if self.agent_position == BOTTOM_LEFT_EXIT:
-                    reward = 10.0
+                if self.agent_position == BOTTOM_RIGHT:
+                    reward = 100.0
                 else:
                     reward = 1.0
         return reward
@@ -122,11 +128,11 @@ class Labyrinth:
         for event in events:
             if event.event_type == EventType.AGENT_DIED:
                 self._done = True
-                reward -1.0
+                reward = -1.0
             if event.event_type == EventType.AGENT_EXIT:
                 self._done = True
-                if self.agent_position == BOTTOM_LEFT_EXIT:
-                    reward = 10.0
+                if self.agent_position == BOTTOM_RIGHT:
+                    reward = 100.0
                 else:
                     reward = 1.0
 

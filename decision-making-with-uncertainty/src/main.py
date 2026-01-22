@@ -112,7 +112,7 @@ def run_value_iteration(env: rl.Labyrinth, render: bool) -> None:
     - render (bool): If the results are to be plotted.
     """
     δ = 0
-    γ = 0.9
+    γ = 0.5
     algo = rl.ValueIteration(env=env, gamma=γ)
     start = time()
     algo.train(δ)
@@ -237,7 +237,7 @@ def main():
     #             Environment initialisation               #
     # ==================================================== #
     # probability of taking a random action instead of the chosen one
-    probability = 0.1
+    probability = 0
     env = rl.Labyrinth(p=probability)
     env.reset()
 

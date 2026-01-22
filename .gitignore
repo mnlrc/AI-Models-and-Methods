@@ -9,6 +9,6 @@ projet1-recherche.zip
 **/rapport.fdb_latexmk
 **/rapport.fls
 **/rapport.synctex.gz
-part-4/data/mnist_test.csv
-part-4/data/mnist_train.csv
+**/mnist_test.csv
+**/mnist_train.csv
 .venv
