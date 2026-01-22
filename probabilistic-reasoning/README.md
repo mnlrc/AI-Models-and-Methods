@@ -6,7 +6,7 @@
 
 ### Technical implementation
 
-This project focuses on the implementation of a Bayesian Network using a matrix filled with a a probability in each cell. The goal of the agent is to find the hidden gems based on an obervation vector and the supposed positions of the gems. We then calculate the Manhattan distance between the two vectors that we inject into the \( e^{\frac{d}{\lambda}} \) formule where \({\lambda}\) is a hyperparameter that controls the sensibility to the divergence between the observations and the hypotheses. The higher the value of \({\lambda}\), the more the model is tolerant to errors and the slower the model will converge towards the solutions. 
+This project focuses on the implementation of a Bayesian Network using a matrix filled with a a probability in each cell. The goal of the agent is to find the hidden gems based on an obervation vector and the supposed positions of the gems. We then calculate the Manhattan distance between the two vectors that we inject into the $e^{\frac{d}{\lambda}}$ formule where ${\lambda}$ is a hyperparameter that controls the sensibility to the divergence between the observations and the hypotheses. The higher the value of ${\lambda}$, the more the model is tolerant to errors and the slower the model will converge towards the solutions. 
 
 This is a small preamble, the complete analysis can be found in the scientific report in the ```doc``` directory (in french).
 
