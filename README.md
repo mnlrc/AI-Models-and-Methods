@@ -15,6 +15,7 @@ The details about each subject can be found in the README file of each subdirect
 
 ```
 .
+├── general-images/ (directory containing images used in the reports, I've centralized them to avoid duplication)
 ├── planning-and-research/
 │   ├── doc/
 │   │   └── ...
