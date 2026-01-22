@@ -13,7 +13,8 @@ The details about each subject can be found in the README file of each subdirect
 
 ## Repository structure
 
-root/
+```
+.
 ├── planning-and-research/
 │   ├── doc/
 │   │   └── ...
@@ -39,5 +40,6 @@ root/
     │   └── ...
     └── data/
         └── ...
+```
 
 Each part contains a ```src``` directory that contains the code implementing the AI method. The ```doc``` directories contain the directives for each part given by the staff of the course. They also contain a detailed analysis of the results in form of a scientific report (in french).
