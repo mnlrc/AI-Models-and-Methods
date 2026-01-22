@@ -26,6 +26,7 @@ Each algorithm is used to solve one kind of problem. Every problem adds some com
 ## Run the project
 
 At the root of this directory:
+
 ```python3 src/main.py```
 
 or
