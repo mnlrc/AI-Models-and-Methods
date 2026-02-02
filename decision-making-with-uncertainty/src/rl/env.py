@@ -14,20 +14,22 @@ class Labyrinth:
         - p: Probability of taking a random action instead of the chosen one.
         """
         self._p = p
-        # self._world = World("""
-                # .  .  .  X  @  .  S0
-                # .  @  .  .  .  .  @
-                # .  @  .  .  .  @  .
-                # .  .  @  .  V  .  .
-                # @  .  @  .  V  @  .
-                # .  .  .  .  .  .  .
-                # X  @  .  V  @  .  .""")
-
         self._world = World("""
-            S0  .  .  .  X
-            .  @  .  .  @
-            .  .  .  .  X          
-                            """)
+                .  .  .  X  @  .  S0
+                .  @  .  .  .  .  @
+                .  @  .  .  .  @  .
+                .  .  @  .  V  .  .
+                @  .  @  .  V  @  .
+                .  .  .  .  .  .  .
+                X  @  .  V  @  .  .""")
+
+        # Alternative world configurations for testing:
+        # self._world = World("""
+        #     S0  .  .  .  X
+        #     .  @  .  .  @
+        #     .  .  .  .  X          
+        #                     """)
+        
         self._done = False
         self._first_render = True
         all_positions = set(product(range(self._world.height), range(self._world.width)))
