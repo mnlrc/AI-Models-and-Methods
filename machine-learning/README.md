@@ -6,7 +6,7 @@ The concept of neural network is not very specific. In fact, there are different
 
 ![autoencoder](autoencoder.png)
 
-The interesting part of this project is the analysis of different parameters such as the number of _epochs_, the batch size and the value of the learning rate. It is also very relevant in today's context with all the LLMs.
+The interesting part of this project lies within the analysis of different parameters such as the number of _epochs_, the batch size and the value of the learning rate. It is also very relevant in today's context with all the LLMs.
 
 ## General and other use cases
 
@@ -30,3 +30,11 @@ The interesting part of this project is the analysis of different parameters suc
 
 - **Healthcare Diagnostics**  
   Neural networks assist in medical decision-making. Used in radiology and disease prediction.
+
+## Run the project
+
+First you must download the data from [Kaggle]( https://www.kaggle.com/datasets/oddrationale/mnist-in-csv) and put the downloaded files in the data directory. Once this is done, at the root of this directory, run:
+
+```bash
+python3 src/main.py
+```
