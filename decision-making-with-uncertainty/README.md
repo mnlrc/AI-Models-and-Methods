@@ -8,7 +8,7 @@ Once again, you will find below a quick introduction to the subject of this proj
 
 The agent computes the optimal state values for every state in a Markov decision problem using the following formula:
 
-$${V_{k+1}^*(s) = \max_a \sum_{s'} T(s, a, s') (R(s, a, s') + \gamma V_k^*(s')}$$
+$$V_{k+1}^*(s) = \max_a \sum_{s'} T(s, a, s') (R(s, a, s') + \gamma V_k^*(s')$$
 
 The agent knows the environment, it knows the transition probabilities. It works by iteratively updating the value of each state based on the expected rewards from possible actions until the values converge. Here is a look at the final resulting heatmap after the values have converged:
 
