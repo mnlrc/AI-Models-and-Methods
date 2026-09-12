@@ -5,9 +5,9 @@ This repository holds 4 different AI projects made within the context of the Art
 Each part implements a different theme in the AI field:
 
 - [**Planning and research**](https://github.com/mnlrc/AI-Models-and-Methods/tree/main/planning-and-research)
-- **Probabilistic reasoning** (Bayesian Networks)
-- **Decision making with uncertainty** (Reinforcement Learning)
-- **Machine learning** (Neural Networks)
+- [**Probabilistic reasoning**](https://github.com/mnlrc/AI-Models-and-Methods/tree/main/probabilistic-reasoning) (Bayesian Networks)
+- [**Decision making with uncertainty**](https://github.com/mnlrc/AI-Models-and-Methods/tree/main/decision-making-with-uncertainty) (Reinforcement Learning)
+- [**Machine learning**](https://github.com/mnlrc/AI-Models-and-Methods/tree/main/machine-learning) (Neural Networks)
 
 The details about each subject can be found in the README file of each subdirectory (and the scientific reports).
 
